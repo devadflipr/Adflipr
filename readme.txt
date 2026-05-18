@@ -1,27 +1,62 @@
-=== adflipr ===
-Contributors: devadflipr
+=== Adflipr===
+Contributors: Adflipr
 Tags: woocommerce, email marketing, automation, ecommerce, integration
 Requires at least: 6.4
 Tested up to: 6.9
-Stable tag: 1.0.19
 Requires PHP: 8.1
 Requires Plugins: woocommerce
-License: GPLv3 or later
-License URI: https://www.gnu.org/licenses/gpl-3.0.html
+WC requires at least: 8.0
+WC tested up to: 10.3
+Stable tag: 1.0.20
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Connect WooCommerce to Adflipr for email marketing, automation, and secure store data sync.
 
 == Description ==
 
-This plugin is a **connector for an external service**. It bridges your WordPress/WooCommerce site to **Adflipr** (hosted SaaS) so you can use Adflipr features with store data. **You need an active Adflipr account** — nothing is sent to Adflipr until a store administrator connects the integration from WordPress admin.
+Adflipr is a connector plugin that bridges your WordPress/WooCommerce store to **Adflipr** (hosted SaaS) for email marketing, automation, and commerce data sync. **You need an active Adflipr account** — nothing is sent to Adflipr until a store administrator connects the integration from the WordPress admin **Adflipr** screen.
 
-After connection, the plugin can:
+The Adflipr admin screen provides a React store overview (connect, sync status, **View App**). Suggested Privacy Policy text is registered for the WordPress privacy guide (**Settings → Privacy**) when this plugin is active.
 
-* Sync product, coupon, order, and (where available) subscription data to Adflipr.
-* Send webhook-style updates when catalog entities change.
-* Forward checkout and cart events used for automation (for example abandoned cart recovery configured in Adflipr).
+= Key Features =
 
-The Adflipr admin screen shows a React store overview (connect, sync status, **View App**). Suggested Privacy Policy text is available under **Settings → Privacy** when this plugin is active.
+* **Catalog & order synchronization**
+  * Sync product, coupon, order, and (where available) subscription data to Adflipr
+  * Webhook-style updates when catalog entities change
+  * Offline retry queue when Adflipr is temporarily unreachable
+
+* **Checkout & cart automation**
+  * Forward checkout and cart events for flows such as abandoned cart recovery (configured in Adflipr)
+  * Capture customer email at checkout for recovery workflows
+  * Support for classic and block checkout where WooCommerce provides hooks
+
+* **Secure connection**
+  * Administrator sign-in from WordPress admin
+  * Authentication tokens stored in WordPress (`wp_options`) and sent over HTTPS
+  * Disconnect from the Adflipr dashboard or local admin actions
+
+* **Admin experience**
+  * React-based admin UI built with `@wordpress/scripts`
+  * Connect and open the full Adflipr web application from WordPress
+  * Admin notices when the store is not connected
+
+* **Developer-friendly**
+  * REST endpoints under `/wp-json/adflipr/v1/` (including `integration-health` for diagnostics)
+  * Human-readable source and build tooling included in the plugin package
+  * Configurable API base URL via `wp-config.php` or filters
+
+* **WooCommerce integration**
+  * Requires WooCommerce 8.0+
+  * HPOS (custom order tables) compatibility declared
+  * Works with WooCommerce products, orders, coupons, and checkout flows
+
+= Requirements =
+
+* WordPress 6.4 or higher
+* WooCommerce 8.0 or higher
+* PHP 8.1 or higher
+* Active Adflipr account (for meaningful use after connection)
 
 **UTM parameter storage on the storefront is disabled by default.** A small script runs only when the `adflipr_utm_tracking_enabled` option is enabled.
 
@@ -52,40 +87,48 @@ https://adflipr.com/terms
 Privacy Policy:
 https://adflipr.com/privacy
 
-== Development ==
-
-Human-readable source ships with the plugin (`src/`, `package.json`, `webpack.config.js`). The admin UI is built with `@wordpress/scripts`; runtime loads hashed files from `build/`.
-
-**Source repository:**
-
-https://github.com/adflipr/adflipr
-
-**Build from source** (from the plugin directory):
-
-1. `npm install`
-2. `npm run build`
-
-Compiled assets are written to `build/` (`asset-manifest.json` lists entry files). Rebuild after changing `src/`.
+Support:
+https://adflipr.com/contact-us
 
 == Installation ==
 
-1. Upload the plugin folder to `/wp-content/plugins/` or install through **Plugins → Add New**.
-2. Activate the plugin. PHP 8.1+, WordPress 6.4+, and WooCommerce 8.0+ are required.
-3. Open **Adflipr** in the WordPress admin menu and connect your Adflipr account. Use **View App** to open the Adflipr web application.
+= Automatic Installation =
+
+1. Log in to your WordPress admin panel
+2. Navigate to **Plugins → Add New**
+3. Search for **Adflipr**
+4. Click **Install Now**
+5. Activate the plugin
+
+= Manual Installation =
+
+1. Download the plugin zip file
+2. Log in to your WordPress admin panel
+3. Navigate to **Plugins → Add New**
+4. Click **Upload Plugin**
+5. Choose the zip file and click **Install Now**
+6. Activate the plugin
+
+= After Installation =
+
+1. Ensure WooCommerce is installed and active (PHP 8.1+, WordPress 6.4+)
+2. Open **Adflipr** in the WordPress admin menu
+3. Connect your Adflipr account
+4. Use **View App** to open the Adflipr web application and configure campaigns and automation
 
 == Frequently Asked Questions ==
 
-= Does this plugin work without WooCommerce? =
+= Do I need WooCommerce? =
 
-No. WooCommerce must be installed and active.
+Yes. WooCommerce must be installed and active. This plugin does not provide standalone value without WooCommerce.
 
-= Does this plugin work without an Adflipr account? =
+= Do I need an Adflipr account? =
 
-No meaningful benefit. This is a service integration. Without signing in to Adflipr, sync and automation either do not run or have no destination.
+Yes. This is a service integration. Without signing in to Adflipr, sync and automation either do not run or have no destination.
 
 = What data leaves my site? =
 
-See **External services** above and **Settings → Privacy** suggested text.
+See **External services** above and **Settings → Privacy** suggested text when this plugin is active.
 
 = How do I disconnect? =
 
@@ -109,9 +152,12 @@ Run `npm install` and `npm run build` in the plugin directory. See **Development
 
 == Screenshots ==
 
-1. Adflipr WordPress admin — store overview and View App.
+1. Adflipr WordPress admin — store overview and View App
 
 == Changelog ==
+
+= 1.0.20 =
+* Readme and packaging updates for WordPress.org submission.
 
 = 1.0.17 =
 * Removed PHP Adflipr Health panel (diagnostics remain via REST `integration-health` for developers).
@@ -128,15 +174,49 @@ Run `npm install` and `npm run build` in the plugin directory. See **Development
 
 == Upgrade Notice ==
 
+= 1.0.20 =
+Documentation and compliance updates. Requires WooCommerce 8.0+ and an Adflipr account for connected features.
+
 = 1.0.12 =
 Compliance and documentation updates for WordPress.org; no intentional behavior changes to sync or recovery.
 
 = 1.0.7 =
 Admin layout and disconnect flow updates; reconnect from Adflipr if disconnected remotely.
 
-== Privacy ==
+== Support ==
+
+For support, visit:
+https://adflipr.com/contact-us
+
+== Development ==
+
+The development source code for this plugin is available for review and rebuild.
+
+Human-readable source ships with the plugin (`src/`, `package.json`, `webpack.config.js`). The admin UI is built with `@wordpress/scripts`; runtime loads hashed files from `build/`.
+
+GitHub:
+https://github.com/adflipr/adflipr
+
+**Build from source** (from the plugin directory):
+
+1. `npm install`
+2. `npm run build`
+
+Compiled assets are written to `build/` (`asset-manifest.json` lists entry files). Rebuild after changing `src/`.
+
+== Credits ==
+
+Developed by Adflipr
+Website: https://adflipr.com
+
+== License ==
+
+Adflipr for WooCommerce is licensed under the GPLv3 or later.
+
+== Privacy Policy ==
 
 * **Sync & webhooks:** Product, coupon, order, subscription (if applicable), and related payloads may be sent to Adflipr over HTTPS after you connect.
 * **Authentication:** Login tokens are stored in `wp_options` after admin sign-in.
 * **UTM cookies (optional):** When `adflipr_utm_tracking_enabled` is on, `utm_*` query keys may be stored in first-party session cookies for attribution.
 * **Disconnect & uninstall:** Disconnect clears local tokens; uninstall removes plugin options and attempts to notify Adflipr.
+* **Third-party processing:** Review Adflipr’s privacy policy at https://adflipr.com/privacy for how they process data.

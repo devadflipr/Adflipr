@@ -1,0 +1,16 @@
+{
+  "entry": "index",
+  "js": "index.94f6887d.js",
+  "css": [
+    "style-index.e9e2fdee.css",
+    "index.f5e4068b.css"
+  ],
+  "dependencies": [
+    "react",
+    "react-dom",
+    "wp-dom-ready",
+    "wp-element"
+  ],
+  "version": "ee5fb056ab42667e11c9",
+  "builtAt": "2026-05-18T11:45:15.654Z"
+}

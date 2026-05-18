@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Adflipr
  * Description: Email marketing and automation for WooCommerce stores, powered by secure catalog, cart, checkout, and order sync with Adflipr.
- * Version: 1.0.19
+ * Version: 1.0.20
  * Requires at least: 6.4
  * Tested up to: 6.9
  * Requires PHP: 8.1
