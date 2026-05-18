@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# One-shot: bump plugin semver (default), npm run build, create adflipr.zip.
+# One-shot: bump plugin semver (default), npm run build, create adflipr-for-woocommerce.zip.
 # By default skips npm install; use --install for a full install.
 #
 # Usage (from wordpress/):
@@ -26,7 +26,7 @@ print_help() {
 Usage: ./build-and-package.sh [options]
 
   By default increments the patch version (includes/adflipr-version.php, adflipr.php header, readme.txt Stable tag,
-  package.json), then runs wp-scripts build and create-plugin-zip.sh → adflipr.zip.
+  package.json), then runs wp-scripts build and create-plugin-zip.sh → adflipr-for-woocommerce.zip.
 
   By default does NOT run npm install (faster when node_modules already exists).
   Use --install when dependencies are missing or after package.json changes.
@@ -151,7 +151,7 @@ echo "------------------------------------------"
 VER_LINE="$(grep 'const ADFLIPR_PLUGIN_VERSION' "$SCRIPT_DIR/includes/adflipr-version.php" | head -1 | sed -n "s/.*const ADFLIPR_PLUGIN_VERSION = '\\([^']*\\)';/\1/p")"
 echo "=========================================="
 echo "Done."
-echo "  Package: $SCRIPT_DIR/adflipr.zip"
+echo "  Package: $SCRIPT_DIR/adflipr-for-woocommerce.zip"
 echo "  Plugin version (ADFLIPR_PLUGIN_VERSION / ADFLIPR_VERSION): ${VER_LINE:-unknown}"
 echo "Upload: Plugins → Add New → Upload Plugin (WordPress should offer upgrade if version increased)."
 echo "=========================================="

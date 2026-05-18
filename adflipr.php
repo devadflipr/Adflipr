@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Plugin Name: Adflipr
+ * Plugin Name: Adflipr for WooCommerce
  * Description: Email marketing and automation for WooCommerce stores, powered by secure catalog, cart, checkout, and order sync with Adflipr.
- * Version: 1.0.20
+ * Version: 1.0.22
  * Requires at least: 6.4
  * Tested up to: 6.9
  * Requires PHP: 8.1
@@ -12,8 +12,8 @@
  * WC tested up to: 10.3.0
  *  Author: Adflipr
  *  License: GPLv3 or later
- *  License URI: http://www.gnu.org/licenses/gpl-3.0.html
- *  Text Domain: adflipr
+ *  License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ *  Text Domain: adflipr-for-woocommerce
  */
 
 defined('ABSPATH') || exit;
@@ -25,7 +25,7 @@ add_action(
   'init',
   static function () {
     load_plugin_textdomain(
-      'adflipr',
+      'adflipr-for-woocommerce',
       false,
       dirname(plugin_basename(__FILE__)) . '/languages'
     );
@@ -181,7 +181,7 @@ if (! class_exists('AdFlipr_Core')) {
     {
 
       define('ADFLIPR_VERSION', ADFLIPR_PLUGIN_VERSION);
-      define('ADFLIPR_SLUG', 'adflipr');
+      define('ADFLIPR_SLUG', 'adflipr-for-woocommerce');
       define('ADFLIPR_PLUGIN_FILE', __FILE__);
       define('ADFLIPR_PLUGIN_DIR', __DIR__);
       define('ADFLIPR_PLUGIN_URL', untrailingslashit(plugin_dir_url(ADFLIPR_PLUGIN_FILE)));
@@ -277,7 +277,7 @@ function adflipr_on_activate()
     deactivate_plugins(ADFLIPR_PLUGIN_BASENAME);
     wp_die(
       wp_kses_post('<div class="wrap">' . adflipr_requirements_fail_html() . '</div>'),
-      esc_html__('Plugin activation blocked', 'adflipr'),
+      esc_html__('Plugin activation blocked', 'adflipr-for-woocommerce'),
       array(
         'response' => 200,
         'back_link' => true,

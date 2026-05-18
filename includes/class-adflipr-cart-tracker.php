@@ -92,7 +92,7 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
           ? (int) sanitize_text_field(wp_unslash((string) $_SERVER['CONTENT_LENGTH']))
           : 0;
         if ($content_length > (int) ADFLIPR_SAVE_CART_MAX_CONTENT_LENGTH) {
-          wp_send_json_error(array('message' => __('Request too large.', 'adflipr')), 413);
+          wp_send_json_error(array('message' => __('Request too large.', 'adflipr-for-woocommerce')), 413);
         }
       }
 
@@ -104,11 +104,11 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
         $nonce_value = sanitize_text_field(wp_unslash($_POST['nonce']));
       }
       if ($nonce_value === '' || ! wp_verify_nonce($nonce_value, $nonce_action)) {
-        wp_send_json_error(array('message' => __('Invalid security token.', 'adflipr')), 403);
+        wp_send_json_error(array('message' => __('Invalid security token.', 'adflipr-for-woocommerce')), 403);
       }
 
       if (! $this->save_cart_rate_limit_ok()) {
-        wp_send_json_error(array('message' => __('Too many requests.', 'adflipr')), 429);
+        wp_send_json_error(array('message' => __('Too many requests.', 'adflipr-for-woocommerce')), 429);
       }
 
       if (! function_exists('WC') || is_null(WC()->cart) || empty(WC()->cart->get_cart())) {
@@ -125,7 +125,7 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
       }
 
       if ($email === '') {
-        wp_send_json_error(array('message' => __('Email is missing.', 'adflipr')));
+        wp_send_json_error(array('message' => __('Email is missing.', 'adflipr-for-woocommerce')));
 
         return;
       }

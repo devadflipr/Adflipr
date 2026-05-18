@@ -18,7 +18,7 @@ function adflipr_rest_verify_wp_nonce_header($request)
   if (! $request instanceof WP_REST_Request) {
     return new WP_Error(
       'rest_forbidden',
-      __('Invalid REST request.', 'adflipr'),
+      __('Invalid REST request.', 'adflipr-for-woocommerce'),
       array('status' => 403)
     );
   }
@@ -27,7 +27,7 @@ function adflipr_rest_verify_wp_nonce_header($request)
   if (! is_string($nonce) || $nonce === '') {
     return new WP_Error(
       'rest_cookie_invalid_nonce',
-      __('Missing REST nonce. Reload the admin page and try again.', 'adflipr'),
+      __('Missing REST nonce. Reload the admin page and try again.', 'adflipr-for-woocommerce'),
       array('status' => 403)
     );
   }
@@ -36,7 +36,7 @@ function adflipr_rest_verify_wp_nonce_header($request)
   if (! wp_verify_nonce($nonce, 'wp_rest')) {
     return new WP_Error(
       'rest_cookie_invalid_nonce',
-      __('Invalid REST nonce. Reload the admin page and try again.', 'adflipr'),
+      __('Invalid REST nonce. Reload the admin page and try again.', 'adflipr-for-woocommerce'),
       array('status' => 403)
     );
   }

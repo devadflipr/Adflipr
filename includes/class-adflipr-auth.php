@@ -45,7 +45,7 @@ if (! class_exists('AdFlipr_Auth')) {
         );
         $wc_detail = isset($data['message']) && is_string($data['message'])
           ? $data['message']
-          : __('Could not prepare WooCommerce API credentials.', 'adflipr');
+          : __('Could not prepare WooCommerce API credentials.', 'adflipr-for-woocommerce');
 
         return array_merge(
           adflipr_auth_failure_response(0, $wc_detail),
@@ -210,8 +210,8 @@ if (! class_exists('AdFlipr_Auth')) {
         return array(
           'status'  => true,
           'message' => $with_integration
-            ? __('Authentication successful.', 'adflipr')
-            : __('Credentials verified.', 'adflipr'),
+            ? __('Authentication successful.', 'adflipr-for-woocommerce')
+            : __('Credentials verified.', 'adflipr-for-woocommerce'),
         );
       }
 
@@ -235,8 +235,8 @@ if (! class_exists('AdFlipr_Auth')) {
         return array(
           'status'  => true,
           'message' => $with_integration
-            ? __('Authentication successful.', 'adflipr')
-            : __('Credentials verified.', 'adflipr'),
+            ? __('Authentication successful.', 'adflipr-for-woocommerce')
+            : __('Credentials verified.', 'adflipr-for-woocommerce'),
         );
       }
 
@@ -396,7 +396,7 @@ if (! class_exists('AdFlipr_Auth')) {
       return new WP_REST_Response(
         array(
           'status'  => true,
-          'message' => __('Adflipr integration disconnected on this site.', 'adflipr'),
+          'message' => __('Adflipr integration disconnected on this site.', 'adflipr-for-woocommerce'),
         ),
         200
       );
@@ -672,7 +672,7 @@ if (! class_exists('AdFlipr_Auth')) {
         if (! $with_integration) {
           return rest_ensure_response(array(
             'status'  => true,
-            'message' => isset($get_data['message']) ? $get_data['message'] : __('Credentials verified.', 'adflipr'),
+            'message' => isset($get_data['message']) ? $get_data['message'] : __('Credentials verified.', 'adflipr-for-woocommerce'),
           ));
         }
 
@@ -683,17 +683,17 @@ if (! class_exists('AdFlipr_Auth')) {
           if (is_array($sync_result) && isset($sync_result['status']) && $sync_result['status'] === false) {
             $sync_warning = isset($sync_result['message']) && is_string($sync_result['message'])
               ? $sync_result['message']
-              : __('Initial sync did not complete.', 'adflipr');
+              : __('Initial sync did not complete.', 'adflipr-for-woocommerce');
           }
         } catch (\Throwable $e) {
           adflipr_debug_log('login_token_sync_throw', ['error' => $e->getMessage()]);
-          $sync_warning = __('Initial sync failed; connection is saved.', 'adflipr');
+          $sync_warning = __('Initial sync failed; connection is saved.', 'adflipr-for-woocommerce');
         }
-        $message = __('Token stored successfully.', 'adflipr');
+        $message = __('Token stored successfully.', 'adflipr-for-woocommerce');
         if ($sync_warning !== '') {
           $message .= ' ' . sprintf(
             /* translators: %s: sync failure detail */
-            __('Note: %s', 'adflipr'),
+            __('Note: %s', 'adflipr-for-woocommerce'),
             $sync_warning
           );
         }
@@ -725,7 +725,7 @@ if (! class_exists('AdFlipr_Auth')) {
       if ($path === '') {
         return new WP_Error(
           'adflipr_proxy_invalid_path',
-          __('Invalid or empty proxy path.', 'adflipr'),
+          __('Invalid or empty proxy path.', 'adflipr-for-woocommerce'),
           array('status' => 400)
         );
       }
@@ -882,7 +882,7 @@ if (! class_exists('AdFlipr_Auth')) {
       if (! $this->valid_token()) {
         return new WP_Error(
           'adflipr_no_token',
-          __('Not connected to Adflipr.', 'adflipr'),
+          __('Not connected to Adflipr.', 'adflipr-for-woocommerce'),
           array('status' => 403)
         );
       }
@@ -930,7 +930,7 @@ if (! class_exists('AdFlipr_Auth')) {
       if (! $this->valid_token()) {
         return new WP_Error(
           'adflipr_no_token',
-          __('Not connected to Adflipr.', 'adflipr'),
+          __('Not connected to Adflipr.', 'adflipr-for-woocommerce'),
           array('status' => 403)
         );
       }

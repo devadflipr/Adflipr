@@ -42,11 +42,11 @@ if (! class_exists('AdFlipr_Data')) {
 
       $result = [
         'status'  => false,
-        'message' => __('Data submission failed', 'adflipr')
+        'message' => __('Data submission failed', 'adflipr-for-woocommerce')
       ];
 
       if (! function_exists('WC')) {
-        $result['message'] = __('Data send failed WooCommerce not active', 'adflipr');
+        $result['message'] = __('Data send failed WooCommerce not active', 'adflipr-for-woocommerce');
 
         return $result;
       }
@@ -633,7 +633,7 @@ if (! class_exists('AdFlipr_Data')) {
       ];
 
       if (! AdFlipr_Core()->auth->valid_token()) {
-        $result['message'] = __('Not connected to Adflipr (missing or expired token).', 'adflipr');
+        $result['message'] = __('Not connected to Adflipr (missing or expired token).', 'adflipr-for-woocommerce');
         $result['no_token'] = true;
 
         return $result;
@@ -656,7 +656,7 @@ if (! class_exists('AdFlipr_Data')) {
       if (is_wp_error($response)) {
         $result['message'] = sprintf(
           /* translators: %s: HTTP client error message */
-          __('Data submission error: %s', 'adflipr'),
+          __('Data submission error: %s', 'adflipr-for-woocommerce'),
           $response->get_error_message()
         );
         adflipr_debug_log(
@@ -676,7 +676,7 @@ if (! class_exists('AdFlipr_Data')) {
       if ($response_code === 200) {
         $result['status']  = true;
         $result['code']    = 200;
-        $result['message'] = __('Data sent successfully.', 'adflipr');
+        $result['message'] = __('Data sent successfully.', 'adflipr-for-woocommerce');
         $this->record_last_successful_webhook_delivery($data);
 
         return $result;
@@ -687,7 +687,7 @@ if (! class_exists('AdFlipr_Data')) {
       ) {
         AdFlipr_Core()->auth->soft_disconnect('remote');
         $result['code']                    = 403;
-        $result['message']                 = __('Adflipr integration was disconnected remotely.', 'adflipr');
+        $result['message']                 = __('Adflipr integration was disconnected remotely.', 'adflipr-for-woocommerce');
         $result['integration_deleted']     = true;
 
         return $result;
@@ -696,7 +696,7 @@ if (! class_exists('AdFlipr_Data')) {
       $result['code']    = $response_code;
       $result['message'] = sprintf(
         /* translators: %d: HTTP status code */
-        __('Data submission failed. Response code: %d', 'adflipr'),
+        __('Data submission failed. Response code: %d', 'adflipr-for-woocommerce'),
         $response_code
       );
 
@@ -724,7 +724,7 @@ if (! class_exists('AdFlipr_Data')) {
         return [
           'status'  => false,
           'code'    => 0,
-          'message' => __('Adflipr integration is disconnected.', 'adflipr'),
+          'message' => __('Adflipr integration is disconnected.', 'adflipr-for-woocommerce'),
           'no_token' => true,
         ];
       }
@@ -758,7 +758,7 @@ if (! class_exists('AdFlipr_Data')) {
         $queued_result = [
           'status'  => true,
           'code'    => 202,
-          'message' => __('Stored offline and will sync when Adflipr is reachable.', 'adflipr'),
+          'message' => __('Stored offline and will sync when Adflipr is reachable.', 'adflipr-for-woocommerce'),
           'queued'  => true,
         ];
         if (empty($enq['deduped'])) {
@@ -772,7 +772,7 @@ if (! class_exists('AdFlipr_Data')) {
       $result['queue_full'] = true;
       $result['message']    = sprintf(
         /* translators: %d: max queue size from ADFLIPR_WEBHOOK_RETRY_MAX_ITEMS */
-        __('Outbound queue is full (%d items). Payload was not stored; retry manually after clearing the queue or increasing capacity.', 'adflipr'),
+        __('Outbound queue is full (%d items). Payload was not stored; retry manually after clearing the queue or increasing capacity.', 'adflipr-for-woocommerce'),
         (int) ADFLIPR_WEBHOOK_RETRY_MAX_ITEMS
       );
 
@@ -1085,7 +1085,7 @@ if (! class_exists('AdFlipr_Data')) {
     public function ajax_process_webhook_retry_queue()
     {
       if (! current_user_can('manage_options')) {
-        wp_send_json_error(['message' => __('Forbidden.', 'adflipr')], 403);
+        wp_send_json_error(['message' => __('Forbidden.', 'adflipr-for-woocommerce')], 403);
       }
 
       check_ajax_referer('adflipr_webhook_retry', 'nonce');
@@ -1128,7 +1128,7 @@ if (! class_exists('AdFlipr_Data')) {
       \WP_CLI::success(
         sprintf(
           /* translators: 1: queue size after, 2: queue size before, 3: batch loops run */
-          __('Webhook retry queue: %1$d item(s) remaining (was %2$d). Ran %3$d batch loop(s).', 'adflipr'),
+          __('Webhook retry queue: %1$d item(s) remaining (was %2$d). Ran %3$d batch loop(s).', 'adflipr-for-woocommerce'),
           $after,
           $before,
           $meta['loops_executed']

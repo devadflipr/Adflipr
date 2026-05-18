@@ -144,10 +144,10 @@ if (! class_exists('AdFlipr_Admin')) {
       ?>
       <div class="notice notice-warning">
         <p>
-          <?php esc_html_e('Adflipr is not connected. Store-related data may queue locally until you connect your Adflipr account.', 'adflipr'); ?>
-          <a href="<?php echo esc_url($settings_url); ?>"><?php esc_html_e('Open Adflipr settings', 'adflipr'); ?></a>
+          <?php esc_html_e('Adflipr is not connected. Store-related data may queue locally until you connect your Adflipr account.', 'adflipr-for-woocommerce'); ?>
+          <a href="<?php echo esc_url($settings_url); ?>"><?php esc_html_e('Open Adflipr settings', 'adflipr-for-woocommerce'); ?></a>
           |
-          <a href="<?php echo esc_url($dismiss_url); ?>"><?php esc_html_e('Dismiss this notice', 'adflipr'); ?></a>
+          <a href="<?php echo esc_url($dismiss_url); ?>"><?php esc_html_e('Dismiss this notice', 'adflipr-for-woocommerce'); ?></a>
         </p>
       </div>
       <?php
@@ -170,12 +170,12 @@ if (! class_exists('AdFlipr_Admin')) {
 
       // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only success notice after prior nonce-protected disconnect.
       if (isset($_GET['adflipr_reset'])) {
-        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Adflipr integration disconnected successfully. Tracking and synchronization are paused until reconnect.', 'adflipr') . '</p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Adflipr integration disconnected successfully. Tracking and synchronization are paused until reconnect.', 'adflipr-for-woocommerce') . '</p></div>';
       }
 
       $notice_reason = get_transient(ADFLIPR_DISCONNECT_NOTICE_TRANSIENT);
       if ($notice_reason === 'remote') {
-        echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html__('Adflipr integration was disconnected from the Adflipr dashboard. Tracking and synchronization are paused until reconnect.', 'adflipr') . '</p></div>';
+        echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html__('Adflipr integration was disconnected from the Adflipr dashboard. Tracking and synchronization are paused until reconnect.', 'adflipr-for-woocommerce') . '</p></div>';
         delete_transient(ADFLIPR_DISCONNECT_NOTICE_TRANSIENT);
       }
     }
@@ -195,31 +195,31 @@ if (! class_exists('AdFlipr_Admin')) {
         '<p>%s</p><ul><li>%s</li><li>%s</li><li>%s</li><li>%s</li></ul><p>%s</p>',
         esc_html__(
           'This site uses the Adflipr plugin to connect WooCommerce with Adflipr (hosted service). Depending on your settings and store activity, data may be transmitted to Adflipr servers over HTTPS.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ),
         esc_html__(
           'Product, coupon, order, and (where applicable) subscription data for synchronization and automation.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ),
         esc_html__(
           'Checkout-related events (for example cart recovery or purchase notifications) when the shopper interacts with checkout.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ),
         esc_html__(
           'Authentication tokens stored locally after you sign in to Adflipr from WordPress admin.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ),
         esc_html__(
           'Optional marketing attribution cookies (utm_* keys from the URL) when that feature is enabled for your site.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ),
         esc_html__(
           'Data is sent so Adflipr can provide email marketing and automation features you configure in your Adflipr account. See Adflipr’s own privacy policy for how they process data.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         )
       );
 
-      wp_add_privacy_policy_content(__('Adflipr', 'adflipr'), wp_kses_post($body));
+      wp_add_privacy_policy_content(__('Adflipr', 'adflipr-for-woocommerce'), wp_kses_post($body));
     }
 
     /**
@@ -228,7 +228,7 @@ if (! class_exists('AdFlipr_Admin')) {
     public function woocommerce_missing_notice()
     {
       ?>
-      <div class="notice notice-error"><p><?php echo esc_html__('Adflipr requires WooCommerce to be installed and active.', 'adflipr'); ?></p></div>
+      <div class="notice notice-error"><p><?php echo esc_html__('Adflipr requires WooCommerce to be installed and active.', 'adflipr-for-woocommerce'); ?></p></div>
       <?php
     }
 
@@ -252,8 +252,8 @@ if (! class_exists('AdFlipr_Admin')) {
     </svg>';
 
       add_menu_page(
-        __('Adflipr', 'adflipr'),
-        __('Adflipr', 'adflipr'),
+        __('Adflipr', 'adflipr-for-woocommerce'),
+        __('Adflipr', 'adflipr-for-woocommerce'),
         'manage_options',
         'adflipr-settings',
         array($this, 'render_react_admin_page'),
@@ -268,7 +268,7 @@ if (! class_exists('AdFlipr_Admin')) {
     public function render_react_admin_page()
     {
       if (! current_user_can('manage_options')) {
-        wp_die(esc_html__('You do not have permission to access this page.', 'adflipr'));
+        wp_die(esc_html__('You do not have permission to access this page.', 'adflipr-for-woocommerce'));
       }
 
       echo '<div class="wrap adflipr-admin-wrap">';
@@ -377,14 +377,14 @@ if (! class_exists('AdFlipr_Admin')) {
       if (! is_user_logged_in() || ! current_user_can('manage_options')) {
         return '<p class="adflipr-shortcode-login-notice">' . esc_html__(
           'The Adflipr app is available to site administrators after you sign in.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ) . '</p>';
       }
 
       if (! class_exists('AdFlipr_Assets') || ! AdFlipr_Assets::has_admin_bundle()) {
         return '<p class="adflipr-shortcode-missing-build">' . esc_html__(
           'Adflipr assets are missing. Run npm run build in the plugin directory or reinstall the plugin package.',
-          'adflipr'
+          'adflipr-for-woocommerce'
         ) . '</p>';
       }
 

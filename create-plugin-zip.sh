@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build a WordPress-installable zip: one top-level folder (adflipr/) for Plugins → Upload.
+# Build a WordPress-installable zip: one top-level folder (adflipr-for-woocommerce/) for Plugins → Upload.
 # Run from wordpress/: ./create-plugin-zip.sh
 # Requires: rsync, zip, prior `npm run build`, and src/ + package.json (WordPress.org source policy).
 # Exclusions: .distignore (see that file; keep in sync with packaging).
@@ -19,8 +19,8 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-ZIP_FILE="${SCRIPT_DIR}/adflipr.zip"
-PLUGIN_SLUG="adflipr"
+ZIP_FILE="${SCRIPT_DIR}/adflipr-for-woocommerce.zip"
+PLUGIN_SLUG="adflipr-for-woocommerce"
 DISTIGNORE="${SCRIPT_DIR}/.distignore"
 
 if [ ! -d build ]; then
@@ -43,7 +43,7 @@ done
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
-rsync_excludes=(--exclude "$PLUGIN_SLUG/" --exclude 'adflipr.zip' --exclude '.distignore')
+rsync_excludes=(--exclude "$PLUGIN_SLUG/" --exclude 'adflipr-for-woocommerce.zip' --exclude 'adflipr.zip' --exclude '.distignore')
 if [ -f "$DISTIGNORE" ]; then
   while IFS= read -r line || [ -n "$line" ]; do
     line="${line%%#*}"

@@ -49,17 +49,17 @@ if (! function_exists('adflipr_user_message_for_code')) {
   function adflipr_user_message_for_code($code)
   {
     $messages = array(
-      'INVALID_CREDENTIALS'                 => __('The email or password you entered is incorrect.', 'adflipr'),
-      'SERVER_ERROR'                        => __('Something went wrong on our end. Please try again in a few minutes.', 'adflipr'),
-      'NETWORK_ERROR'                       => __('Could not reach Adflipr. Check your internet connection and try again.', 'adflipr'),
-      'WC_SETUP_ERROR'                      => __('We could not connect WooCommerce on this site. Ensure WooCommerce is active and try again.', 'adflipr'),
-      'ACCOUNT_ALREADY_HAS_WOOCOMMERCE_STORE' => __('This Adflipr account is already connected to another WooCommerce store. Disconnect it in Adflipr (App Integrations) or on the original WordPress site, then try again here.', 'adflipr'),
-      'STORE_ALREADY_ON_ANOTHER_ACCOUNT'    => __('This WooCommerce store is already connected to another Adflipr account. Sign in with that account or disconnect the store there first.', 'adflipr'),
-      'ACCOUNT_ALREADY_HAS_STORE_INTEGRATION' => __('This Adflipr account already has a store connected (for example Shopify). Disconnect it in Adflipr App Integrations before connecting WooCommerce.', 'adflipr'),
-      'SESSION_EXPIRED'                     => __('Your session expired. Refresh this page and try again.', 'adflipr'),
-      'RATE_LIMITED'                        => __('Too many attempts. Please wait a moment and try again.', 'adflipr'),
-      'INVALID_REQUEST'                     => __('Please check your details and try again.', 'adflipr'),
-      'UNKNOWN'                             => __('Something went wrong. Please try again.', 'adflipr'),
+      'INVALID_CREDENTIALS'                 => __('The email or password you entered is incorrect.', 'adflipr-for-woocommerce'),
+      'SERVER_ERROR'                        => __('Something went wrong on our end. Please try again in a few minutes.', 'adflipr-for-woocommerce'),
+      'NETWORK_ERROR'                       => __('Could not reach Adflipr. Check your internet connection and try again.', 'adflipr-for-woocommerce'),
+      'WC_SETUP_ERROR'                      => __('We could not connect WooCommerce on this site. Ensure WooCommerce is active and try again.', 'adflipr-for-woocommerce'),
+      'ACCOUNT_ALREADY_HAS_WOOCOMMERCE_STORE' => __('This Adflipr account is already connected to another WooCommerce store. Disconnect it in Adflipr (App Integrations) or on the original WordPress site, then try again here.', 'adflipr-for-woocommerce'),
+      'STORE_ALREADY_ON_ANOTHER_ACCOUNT'    => __('This WooCommerce store is already connected to another Adflipr account. Sign in with that account or disconnect the store there first.', 'adflipr-for-woocommerce'),
+      'ACCOUNT_ALREADY_HAS_STORE_INTEGRATION' => __('This Adflipr account already has a store connected (for example Shopify). Disconnect it in Adflipr App Integrations before connecting WooCommerce.', 'adflipr-for-woocommerce'),
+      'SESSION_EXPIRED'                     => __('Your session expired. Refresh this page and try again.', 'adflipr-for-woocommerce'),
+      'RATE_LIMITED'                        => __('Too many attempts. Please wait a moment and try again.', 'adflipr-for-woocommerce'),
+      'INVALID_REQUEST'                     => __('Please check your details and try again.', 'adflipr-for-woocommerce'),
+      'UNKNOWN'                             => __('Something went wrong. Please try again.', 'adflipr-for-woocommerce'),
     );
 
     return isset($messages[$code]) ? $messages[$code] : $messages['UNKNOWN'];

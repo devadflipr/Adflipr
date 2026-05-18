@@ -54,7 +54,7 @@ function adflipr_requirements_failure_messages()
   if (version_compare(PHP_VERSION, ADFLIPR_MIN_PHP_VERSION, '<')) {
     $messages[] = sprintf(
       /* translators: 1: required PHP version, 2: current PHP version */
-      __('AdFlipr requires PHP %1$s or higher (this server reports %2$s).', 'adflipr'),
+      __('AdFlipr requires PHP %1$s or higher (this server reports %2$s).', 'adflipr-for-woocommerce'),
       ADFLIPR_MIN_PHP_VERSION,
       PHP_VERSION
     );
@@ -64,18 +64,18 @@ function adflipr_requirements_failure_messages()
   if (version_compare($wp_version, ADFLIPR_MIN_WP_VERSION, '<')) {
     $messages[] = sprintf(
       /* translators: 1: required WordPress version, 2: current WordPress version */
-      __('AdFlipr requires WordPress %1$s or higher (this site reports %2$s).', 'adflipr'),
+      __('AdFlipr requires WordPress %1$s or higher (this site reports %2$s).', 'adflipr-for-woocommerce'),
       ADFLIPR_MIN_WP_VERSION,
       $wp_version
     );
   }
 
   if (! class_exists('WooCommerce')) {
-    $messages[] = __('AdFlipr requires WooCommerce to be installed and active.', 'adflipr');
+    $messages[] = __('AdFlipr requires WooCommerce to be installed and active.', 'adflipr-for-woocommerce');
   } elseif (defined('WC_VERSION') && version_compare(WC_VERSION, ADFLIPR_MIN_WC_VERSION, '<')) {
     $messages[] = sprintf(
       /* translators: 1: required WooCommerce version, 2: active WooCommerce version */
-      __('AdFlipr requires WooCommerce %1$s or higher (you have %2$s).', 'adflipr'),
+      __('AdFlipr requires WooCommerce %1$s or higher (you have %2$s).', 'adflipr-for-woocommerce'),
       ADFLIPR_MIN_WC_VERSION,
       WC_VERSION
     );

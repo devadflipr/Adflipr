@@ -1,5 +1,5 @@
-=== Adflipr===
-Contributors: Adflipr
+=== Adflipr for WooCommerce ===
+Contributors: devadflipr
 Tags: woocommerce, email marketing, automation, ecommerce, integration
 Requires at least: 6.4
 Tested up to: 6.9
@@ -7,9 +7,9 @@ Requires PHP: 8.1
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.3
-Stable tag: 1.0.20
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 1.0.22
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Connect WooCommerce to Adflipr for email marketing, automation, and secure store data sync.
 
@@ -211,7 +211,7 @@ Website: https://adflipr.com
 
 == License ==
 
-Adflipr for WooCommerce is licensed under the GPLv3 or later.
+Adflipr is licensed under the GPLv3 or later.
 
 == Privacy Policy ==
 
