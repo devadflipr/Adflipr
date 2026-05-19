@@ -3,7 +3,7 @@
  * Canonical plugin version (semver).
  *
  * Keep in sync with:
- * - `adflipr.php` plugin header `Version:`
+ * - `adflipr-for-woocommerce.php` plugin header `Version:`
  * - `readme.txt` header `Stable tag:`
  * - `package.json` `"version"`
  *

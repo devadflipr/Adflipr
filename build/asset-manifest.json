@@ -1,6 +1,6 @@
 {
   "entry": "index",
-  "js": "index.94f6887d.js",
+  "js": "index.bc2ffe0e.js",
   "css": [
     "style-index.e9e2fdee.css",
     "index.f5e4068b.css"
@@ -11,6 +11,6 @@
     "wp-dom-ready",
     "wp-element"
   ],
-  "version": "ee5fb056ab42667e11c9",
-  "builtAt": "2026-05-18T12:22:30.198Z"
+  "version": "82b126c0b3763653d23e",
+  "builtAt": "2026-05-19T16:43:04.652Z"
 }

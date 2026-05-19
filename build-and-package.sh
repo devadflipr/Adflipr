@@ -25,7 +25,7 @@ print_help() {
   cat <<'EOF'
 Usage: ./build-and-package.sh [options]
 
-  By default increments the patch version (includes/adflipr-version.php, adflipr.php header, readme.txt Stable tag,
+  By default increments the patch version (includes/adflipr-version.php, adflipr-for-woocommerce.php header, readme.txt Stable tag,
   package.json), then runs wp-scripts build and create-plugin-zip.sh → adflipr-for-woocommerce.zip.
 
   By default does NOT run npm install (faster when node_modules already exists).

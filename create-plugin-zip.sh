@@ -33,7 +33,7 @@ if [ ! -f build/asset-manifest.json ]; then
   exit 1
 fi
 
-for required in adflipr.php readme.txt includes src package.json webpack.config.js; do
+for required in adflipr-for-woocommerce.php readme.txt includes src package.json webpack.config.js; do
   if [ ! -e "$required" ]; then
     echo "Missing required path: $required"
     exit 1

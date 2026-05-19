@@ -177,7 +177,19 @@ export function resolveUserError(input) {
   }
 
   if (input instanceof Error) {
+    if (typeof input.adfliprCode === "string" && USER_MESSAGES[input.adfliprCode]) {
+      const msg =
+        typeof input.message === "string" && input.message.trim() !== ""
+          ? input.message.trim()
+          : messageForErrorCode(input.adfliprCode);
+      return { code: input.adfliprCode, message: msg };
+    }
     const code = classifyErrorDetail(input.message);
+    const trimmed =
+      typeof input.message === "string" ? input.message.trim() : "";
+    if (trimmed !== "" && code === ERROR_CODES.UNKNOWN) {
+      return { code, message: trimmed };
+    }
     return { code, message: messageForErrorCode(code) };
   }
 
@@ -214,7 +226,11 @@ export function resolveUserError(input) {
         : nested && typeof nested.message === "string"
           ? nested.message
           : "";
-    const code = classifyErrorDetail(raw);
+    const trimmed = typeof raw === "string" ? raw.trim() : "";
+    const code = classifyErrorDetail(trimmed);
+    if (trimmed !== "") {
+      return { code, message: trimmed };
+    }
     return { code, message: messageForErrorCode(code) };
   }
 
@@ -227,6 +243,70 @@ export function resolveUserError(input) {
 /** Login form failures. */
 export function resolveLoginError(input) {
   return resolveUserError(input);
+}
+
+/**
+ * True when Adflipr rejected the WP token or integration is inactive (disconnect from app).
+ * @param {unknown} error
+ */
+export function isIntegrationDisconnectedError(error) {
+  if (error == null) {
+    return false;
+  }
+  if (typeof error === "object" && !(error instanceof Error)) {
+    if (error.code === "integration_deleted" || error.integration_deleted === true) {
+      return true;
+    }
+    if (
+      error.data &&
+      typeof error.data === "object" &&
+      (error.data.code === "integration_deleted" ||
+        error.data.integration_deleted === true)
+    ) {
+      return true;
+    }
+  }
+  if (error instanceof Error) {
+    if (error.adfliprCode === ERROR_CODES.SESSION_EXPIRED) {
+      return true;
+    }
+    const msg = error.message.toLowerCase();
+    if (
+      msg.includes("integration_deleted") ||
+      msg.includes("not connected to adflipr") ||
+      msg.includes("integration is disconnected")
+    ) {
+      return true;
+    }
+    if (error.data && typeof error.data === "object") {
+      return isIntegrationDisconnectedError(error.data);
+    }
+  }
+  return false;
+}
+
+/**
+ * Message for login-token failures. Prefers `message` from WP REST / API payload.
+ * @param {unknown} input
+ * @returns {string}
+ */
+export function getLoginFailureMessage(input) {
+  if (input != null && typeof input === "object" && !(input instanceof Error)) {
+    const payload =
+      input.data &&
+      typeof input.data === "object" &&
+      input.data.status === false
+        ? input.data
+        : input;
+    if (
+      payload.status === false &&
+      typeof payload.message === "string" &&
+      payload.message.trim() !== ""
+    ) {
+      return payload.message.trim();
+    }
+  }
+  return resolveLoginError(input).message;
 }
 
 /** Dashboard / proxy API failures. */

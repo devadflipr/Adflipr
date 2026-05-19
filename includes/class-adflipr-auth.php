@@ -853,6 +853,14 @@ if (! class_exists('AdFlipr_Auth')) {
       $body = wp_remote_retrieve_body($response);
       $decoded = json_decode($body, true);
 
+      if (
+        $code === 401
+        || (function_exists('adflipr_response_is_integration_deleted')
+          && adflipr_response_is_integration_deleted($code, $body))
+      ) {
+        $this->soft_disconnect('remote');
+      }
+
       if (! is_array($decoded)) {
         $decoded = array(
           'body' => $body,

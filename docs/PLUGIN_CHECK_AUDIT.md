@@ -5,7 +5,7 @@ Living checklist for [Plugin Check](https://wordpress.org/plugins/plugin-check/)
 
 | Field | Value |
 |-------|--------|
-| Plugin | Adflipr |
+| Plugin | Adflipr for WooCommerce |
 | Stable tag | 1.0.7 |
 | Last scan | 2026-05-16 (manual export) |
 | Zip command | `./create-plugin-zip.sh` (from `wordpress/`) |

@@ -11,7 +11,7 @@ import PerformanceMetrics from "../dashboard/components/PerformanceMetrics";
 import QuickLinks from "../dashboard/components/QuickLinks";
 import RecentCard from "../dashboard/components/RecentCards";
 import { apiClient } from "../utils";
-import { resolveLoginError } from "../utils/error-messages";
+import { getLoginFailureMessage } from "../utils/error-messages";
 import ConnectConsentModal from "./components/ConnectConsentModal";
 import TodoListPreview from "./components/TodoListPreview";
 
@@ -54,8 +54,8 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
       });
 
       if (!response.status) {
-        const { message } = resolveLoginError(response);
-        throw new Error(message);
+        setError(getLoginFailureMessage(response));
+        return;
       }
 
       setPendingCredentials({ email, password });
@@ -72,8 +72,7 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
       }
 
       console.error("Login error:", error);
-      const { message } = resolveLoginError(error);
-      setError(message);
+      setError(getLoginFailureMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -94,8 +93,8 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
       });
 
       if (!response.status) {
-        const { message } = resolveLoginError(response);
-        throw new Error(message);
+        setConsentError(getLoginFailureMessage(response));
+        return;
       }
 
       resetConsentFlow();
@@ -104,8 +103,7 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Integration error:", error);
-      const { message } = resolveLoginError(error);
-      setConsentError(message);
+      setConsentError(getLoginFailureMessage(error));
     } finally {
       setIsApproving(false);
     }

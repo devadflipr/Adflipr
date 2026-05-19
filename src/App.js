@@ -1,8 +1,9 @@
 import { Button } from "@mui/material";
-import { lazy, Suspense, useEffect, useState } from "@wordpress/element";
+import { lazy, Suspense, useCallback, useEffect, useState } from "@wordpress/element";
 import Progress from "./components/Progress";
 import "./styles/style.scss";
-import { apiClient, getAppBaseUrl } from "./utils";
+import { getAppBaseUrl } from "./utils";
+import { checkConnectionState } from "./utils/check-connection-state";
 
 // Lazy load the larger components
 const Dashboard = lazy(() => import("./dashboard/Dashboard"));
@@ -13,22 +14,34 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loginOpen, setLoginOpen] = useState(false);
 
-  useEffect(() => {
+  const refreshConnectionState = useCallback(async () => {
     setIsLoading(true);
-    apiClient("login-token", "GET")
-      .then((data) => {
-        if (!data.loginToken) {
-          throw new Error("No login token found");
-        }
-        setIsLoggedIn(true);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch login token:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    try {
+      const connected = await checkConnectionState();
+      setIsLoggedIn(connected);
+    } catch (error) {
+      console.error("Failed to verify Adflipr connection:", error);
+      setIsLoggedIn(false);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    refreshConnectionState();
+  }, [refreshConnectionState]);
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        refreshConnectionState();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [refreshConnectionState]);
 
   return (
     <div className="adflipr-app-container">

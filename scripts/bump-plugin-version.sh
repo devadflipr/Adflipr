@@ -1,5 +1,5 @@
 #!/bin/bash
-# Bump plugin semver: includes/adflipr-version.php (canonical), adflipr.php header Version:,
+# Bump plugin semver: includes/adflipr-version.php (canonical), adflipr-for-woocommerce.php header Version:,
 # readme.txt Stable tag, package.json.
 #
 # Usage (from wordpress/):
@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$SCRIPT_DIR"
 
 VERSION_PHP="$SCRIPT_DIR/includes/adflipr-version.php"
-ADFLIPR_PHP="$SCRIPT_DIR/adflipr.php"
+ADFLIPR_PHP="$SCRIPT_DIR/adflipr-for-woocommerce.php"
 README_TXT="$SCRIPT_DIR/readme.txt"
 PKG_JSON="$SCRIPT_DIR/package.json"
 
@@ -52,7 +52,7 @@ while [ $# -gt 0 ]; do
 Usage: ./scripts/bump-plugin-version.sh --patch
        ./scripts/bump-plugin-version.sh --set X.Y.Z
 
-Updates: includes/adflipr-version.php, adflipr.php (Plugin header Version:), readme.txt Stable tag, package.json.
+Updates: includes/adflipr-version.php, adflipr-for-woocommerce.php (Plugin header Version:), readme.txt Stable tag, package.json.
 EOF
       exit 0
       ;;

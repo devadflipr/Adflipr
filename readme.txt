@@ -195,7 +195,7 @@ The development source code for this plugin is available for review and rebuild.
 Human-readable source ships with the plugin (`src/`, `package.json`, `webpack.config.js`). The admin UI is built with `@wordpress/scripts`; runtime loads hashed files from `build/`.
 
 GitHub:
-https://github.com/adflipr/adflipr
+https://github.com/devadflipr/adflipr
 
 **Build from source** (from the plugin directory):
 
