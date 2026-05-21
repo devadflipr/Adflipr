@@ -146,10 +146,6 @@ Site administrators can use the **Adflipr** screen in WordPress admin for connec
 
 Use `define( 'ADFLIPR_DEBUG', true );` in `wp-config.php`. Logs use the `[Adflipr]` prefix and avoid tokens or payload bodies.
 
-= How do I rebuild the admin UI from source? =
-
-Run `npm install` and `npm run build` in the plugin directory. See **Development**.
-
 == Screenshots ==
 
 1. Adflipr WordPress admin — store overview and View App
@@ -187,22 +183,6 @@ Admin layout and disconnect flow updates; reconnect from Adflipr if disconnected
 
 For support, visit:
 https://adflipr.com/contact-us
-
-== Development ==
-
-The development source code for this plugin is available for review and rebuild.
-
-Human-readable source ships with the plugin (`src/`, `package.json`, `webpack.config.js`). The admin UI is built with `@wordpress/scripts`; runtime loads hashed files from `build/`.
-
-GitHub:
-https://github.com/devadflipr/adflipr
-
-**Build from source** (from the plugin directory):
-
-1. `npm install`
-2. `npm run build`
-
-Compiled assets are written to `build/` (`asset-manifest.json` lists entry files). Rebuild after changing `src/`.
 
 == Credits ==
 
