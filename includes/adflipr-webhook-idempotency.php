@@ -90,7 +90,9 @@ if (! function_exists('adflipr_webhook_payload_with_idempotency')) {
       case 'cart_abandonment':
         $email = isset($data['email']) ? strtolower(trim((string) $data['email'])) : '';
         $ch    = isset($data['cart_hash']) ? (string) $data['cart_hash'] : '';
-        $data['webhookId'] = 'wcwp_' . hash('sha256', $host . '|cart_abandonment|' . $email . '|' . $ch);
+        // Stable journey key is cart_hash; wc_cart_hash captures content changes for dedupe.
+        $wc_ch = isset($data['wc_cart_hash']) ? (string) $data['wc_cart_hash'] : '';
+        $data['webhookId'] = 'wcwp_' . hash('sha256', $host . '|cart_abandonment|' . $email . '|' . $ch . '|' . $wc_ch);
         break;
 
       case 'checkout_purchased':

@@ -158,9 +158,9 @@ const Dashboard = () => {
               <PerformanceMetrics onApiError={registerFailure} />
               <RecentCard
                 title="Recent Campaigns"
-                linkText="View all Campaigns"
+                linkText="View All Campaigns"
                 imageText="No campaigns created"
-                description="Once your campaign is published, you can start receiving data."
+                // description="Once your campaign is published, you can start receiving data."
                 buttonText="Create Campaign"
                 iconSrc={ImageNoSearch}
                 containerHeight={402}
@@ -171,23 +171,24 @@ const Dashboard = () => {
               />
               <RecentCard
                 title="Recent Carts"
-                linkText="View all Carts"
+                linkText="View All Carts"
                 imageText="No carts created"
+                // description="Whenever a cart is abandoned by a customer, we will immediately track it and display the cart details for you."
                 buttonText="Connect Your Store"
-                description="Whenever a cart is abandoned by a customer, we will immediately track it and display the cart details for you."
                 iconSrc={ImageNoSearch}
                 containerHeight={402}
                 path="/app-integration"
                 linkAction={() => redirectToNewTab("abandoned-cart")}
                 carts={recentCarts}
                 isLoading={isLoadingRecentCarts}
+                hideEmptyStateButton
               />
               <RecentCard
                 title="Recent Automations"
-                linkText="View all Automations"
+                linkText="View All Automations"
                 imageText="No automations available"
+                // description="Once your automation is published, you can start receiving data."
                 buttonText="Create Automation"
-                description="Once your automation is published, you can start receiving data."
                 iconSrc={ImageNoSearch}
                 containerHeight={402}
                 automations={recentAutomations}

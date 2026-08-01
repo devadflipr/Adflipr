@@ -4,6 +4,7 @@ import Progress from "./components/Progress";
 import "./styles/style.scss";
 import { getAppBaseUrl } from "./utils";
 import { checkConnectionState } from "./utils/check-connection-state";
+import { clearWpTodoDismissed } from "./utils/wp-todo-dismiss";
 
 // Lazy load the larger components
 const Dashboard = lazy(() => import("./dashboard/Dashboard"));
@@ -19,9 +20,13 @@ function App() {
     try {
       const connected = await checkConnectionState();
       setIsLoggedIn(connected);
+      if (!connected) {
+        clearWpTodoDismissed();
+      }
     } catch (error) {
       console.error("Failed to verify Adflipr connection:", error);
       setIsLoggedIn(false);
+      clearWpTodoDismissed();
     } finally {
       setIsLoading(false);
     }

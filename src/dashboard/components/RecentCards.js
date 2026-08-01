@@ -6,6 +6,10 @@ import { ReactComponent as IconArrow } from "../../assets/icons/icon-back.svg";
 import Progress from "../../components/Progress";
 import Status from "../../components/Status";
 import Table from "../../components/Table";
+import {
+  activitySentance,
+  renderEmailActivityMessage,
+} from "../../utils/activitySentence";
 import { formatDate, formatStringToTitleCase, getAppBaseUrl } from "../../utils";
 import ActivityDescription from "./RenderActivity";
 
@@ -33,7 +37,7 @@ const RecentCard = ({
   buttonText,
   buttonAction,
   imageText,
-  description,
+  // description,
   iconSrc,
   linkText,
   linkAction,
@@ -46,6 +50,7 @@ const RecentCard = ({
   automations = [],
   isLoading = false,
   onEmptyButtonClick,
+  hideEmptyStateButton = false,
 }) => {
   const [isLoadMoreLoading, setIsLoadMoreLoading] = useState(false);
   const cartTableHeaders = [
@@ -141,12 +146,14 @@ const RecentCard = ({
       key: "contacts",
       disablePadding: false,
       label: "Contacts",
+      render: (row) => row?.numberOfContacts ?? "-",
     },
     {
       numeric: false,
       key: "sent",
       disablePadding: false,
       label: "Sent",
+      render: (row) => row?.numOfEmailSent ?? 0,
     },
     {
       numeric: false,
@@ -178,13 +185,6 @@ const RecentCard = ({
     },
     {
       numeric: false,
-      key: "description",
-      disablePadding: false,
-      label: "Description",
-      render: (row) => row.description || "_",
-    },
-    {
-      numeric: false,
       key: "created",
       disablePadding: false,
       label: "Created On",
@@ -209,63 +209,6 @@ const RecentCard = ({
 
   const handleContactClick = (id, tab = 0) => {
     redirectToNewTab(`/contacts/allContacts/${id}?tab=${tab}`);
-  };
-
-  const activitySentance = (name, action, activity) => {
-    if (
-      !name ||
-      !action ||
-      typeof name !== "string" ||
-      typeof action !== "string"
-    )
-      return "Invalid input";
-    // Convert action to lowercase and replace underscores with spaces
-    const formattedAction = action
-      .split("_") // Split by underscore
-      .slice(1) // Remove the first word (e.g., "EMAIL")
-      .join(" ") // Join remaining words with spaces
-      .toLowerCase();
-    if (action === "EMAIL_SENT") {
-      return (
-        <div>
-          send to{" "}
-          <a
-            href="#"
-            style={{
-              color: "#565ADD",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              handleContactClick(activity.metadata?.contact_id);
-            }}
-          >
-            {name}
-          </a>
-        </div>
-      );
-    }
-    // return `${name} ${formattedAction} the email.`;
-    return (
-      <div>
-        <a
-          href="#"
-          style={{
-            color: "#565ADD",
-            textDecoration: "none",
-            cursor: "pointer",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            handleContactClick(activity.metadata?.contact_id);
-          }}
-        >
-          {name}{" "}
-        </a>
-        {formattedAction} the email.
-      </div>
-    );
   };
 
   const renderContent = () => {
@@ -313,68 +256,69 @@ const RecentCard = ({
 
     if (activities.length > 0) {
       return (
-        <>
-          <div className="automation-activity-log">
-            <>
-              {activities.map((activity) => (
-                <div className="activity" key={activity.id}>
-                  <div className="name-initial">
-                    {getInitials(
-                      activity?.metadata?.contact_name ||
-                        activity?.metadata?.campaign_name,
-                    )}
-                  </div>
-                  <div className="activity-description">
-                    <p className="activity-message">
-                      {getFirstWord(activity?.type) === "EMAIL" ? (
-                        activitySentance(
-                          activity?.metadata?.contact_name,
-                          activity?.type,
-                          activity,
-                        )
-                      ) : (
-                        <ActivityDescription activity={activity} />
-                      )}
-                      {/* {renderActivityDescription(activity)} */}
-                    </p>
-                    <span className="activity-created">
-                      {formatDate(
-                        activity.created != null
-                          ? String(activity.created)
-                          : undefined,
-                        true,
-                      )}
-                    </span>
-                  </div>
+        <div className="automation-activity-log">
+          {activities.map((activity, index) => (
+            <div className="activity" key={activity.id ?? `activity-${index}`}>
+              <div className="name-initial">
+                {getInitials(
+                  activity?.metadata?.contact_name ||
+                    activity?.metadata?.campaign_name ||
+                    "",
+                ) || "A"}
+              </div>
+              <div className="activity-description">
+                <div className="activity-message">
+                  {getFirstWord(activity?.type) === "EMAIL" ? (
+                    renderEmailActivityMessage(
+                      activitySentance(
+                        activity?.metadata?.contact_name,
+                        activity?.type,
+                      ),
+                      activity?.metadata?.contact_name,
+                      activity.metadata?.contact_id,
+                      (contactId) => handleContactClick(contactId),
+                    )
+                  ) : (
+                    <ActivityDescription activity={activity} />
+                  )}
                 </div>
-              ))}
-              {onLoadMore && (
-                <div className="activity-footer">
-                  <button
-                    onClick={async () => {
-                      try {
-                        setIsLoadMoreLoading(true);
-                        const maybePromise = onLoadMore();
-                        if (
-                          maybePromise &&
-                          typeof maybePromise.then === "function"
-                        ) {
-                          await maybePromise;
-                        }
-                      } finally {
-                        setIsLoadMoreLoading(false);
-                      }
-                    }}
-                    className="btn no-border"
-                    disabled={isLoadMoreLoading}
-                  >
-                    {isLoadMoreLoading ? "Loading..." : "Load More..."}
-                  </button>
-                </div>
-              )}
-            </>
-          </div>
-        </>
+                <span className="activity-created">
+                  {formatDate(
+                    activity.created != null
+                      ? String(activity.created)
+                      : undefined,
+                    true,
+                  )}
+                </span>
+              </div>
+            </div>
+          ))}
+          {onLoadMore && (
+            <div className="activity-footer">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    setIsLoadMoreLoading(true);
+                    const maybePromise = onLoadMore();
+                    if (
+                      maybePromise &&
+                      typeof maybePromise.then === "function"
+                    ) {
+                      await maybePromise;
+                    }
+                  } finally {
+                    setIsLoadMoreLoading(false);
+                  }
+                }}
+                className="btn no-border"
+                disabled={isLoadMoreLoading}
+              >
+                {isLoadMoreLoading ? "Loading..." : "Load more"}
+              </button>
+            </div>
+          )}
+        </div>
       );
     }
 
@@ -383,20 +327,23 @@ const RecentCard = ({
         {iconSrc && (
           <img className="automation-icon" src={iconSrc} alt={`No ${title}`} />
         )}
-        <p className="automation-description">{imageText}</p>
-        <p className="automation-description">{description}</p>
-        {buttonText && (
-          <button
-            className="btn btn-recent no-border"
-            onClick={() =>
-              onEmptyButtonClick
-                ? onEmptyButtonClick()
-                : redirectToNewTab(path)
-            }
-          >
-            {buttonText}
-          </button>
-        )}
+        <div className="automation-card-empty-actions">
+          <p className="automation-description">{imageText}</p>
+          {/* {description && ( <p className="automation-description">{description}</p>)} */}
+          {buttonText && !hideEmptyStateButton && (
+            <button
+              type="button"
+              className="btn btn-recent no-border"
+              onClick={() =>
+                onEmptyButtonClick
+                  ? onEmptyButtonClick()
+                  : redirectToNewTab(path)
+              }
+            >
+              {buttonText}
+            </button>
+          )}
+        </div>
       </div>
     );
   };

@@ -13,4 +13,4 @@
 defined('ABSPATH') || exit;
 
 /** @var string Public semver for this release (single source for PHP constants). */
-const ADFLIPR_PLUGIN_VERSION = '1.0.22';
+const ADFLIPR_PLUGIN_VERSION = '1.0.62';

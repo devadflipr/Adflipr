@@ -7,7 +7,7 @@ Requires PHP: 8.1
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.3
-Stable tag: 1.0.22
+Stable tag: 1.0.62
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -59,6 +59,8 @@ The Adflipr admin screen provides a React store overview (connect, sync status, 
 * Active Adflipr account (for meaningful use after connection)
 
 **UTM parameter storage on the storefront is disabled by default.** A small script runs only when the `adflipr_utm_tracking_enabled` option is enabled.
+
+**Storefront popups** load only after you connect Adflipr (`adflipr_popup_embed_enabled` is turned on automatically on connect and off on disconnect). The popup script uses your site’s persistent store id, may write a first-party visitor id in the browser for frequency caps, and can show email capture forms you publish in Adflipr. You are responsible for cookie/consent banners and privacy disclosures where required (for example GDPR). To wait for a consent plugin before loading popups, use the `adflipr_popup_embed_wait_for_consent` filter or dispatch a browser event `adflipr:popup-embed:allow` after consent.
 
 == External services ==
 
@@ -146,11 +148,18 @@ Site administrators can use the **Adflipr** screen in WordPress admin for connec
 
 Use `define( 'ADFLIPR_DEBUG', true );` in `wp-config.php`. Logs use the `[Adflipr]` prefix and avoid tokens or payload bodies.
 
+= How do I rebuild the admin UI from source? =
+
+Run `npm install` and `npm run build` in the plugin directory. See **Development**.
+
 == Screenshots ==
 
 1. Adflipr WordPress admin — store overview and View App
 
 == Changelog ==
+
+= 1.0.58 =
+* Upgrade migration: automatically enable storefront popup embed for stores that connected before popups shipped.
 
 = 1.0.20 =
 * Readme and packaging updates for WordPress.org submission.
@@ -170,6 +179,9 @@ Use `define( 'ADFLIPR_DEBUG', true );` in `wp-config.php`. Logs use the `[Adflip
 
 == Upgrade Notice ==
 
+= 1.0.58 =
+Connected stores now auto-enable the Adflipr popup embed script after update (Side Chat, popups, banners). No reconnect required.
+
 = 1.0.20 =
 Documentation and compliance updates. Requires WooCommerce 8.0+ and an Adflipr account for connected features.
 
@@ -183,6 +195,22 @@ Admin layout and disconnect flow updates; reconnect from Adflipr if disconnected
 
 For support, visit:
 https://adflipr.com/contact-us
+
+== Development ==
+
+The development source code for this plugin is available for review and rebuild.
+
+Human-readable source ships with the plugin (`src/`, `package.json`, `webpack.config.js`). The admin UI is built with `@wordpress/scripts`; runtime loads hashed files from `build/`.
+
+GitHub:
+https://github.com/devadflipr/adflipr
+
+**Build from source** (from the plugin directory):
+
+1. `npm install`
+2. `npm run build`
+
+Compiled assets are written to `build/` (`asset-manifest.json` lists entry files). Rebuild after changing `src/`.
 
 == Credits ==
 

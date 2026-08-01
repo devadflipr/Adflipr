@@ -2,7 +2,20 @@ import React, { useEffect, useState } from "react";
 import Progress from "../../components/Progress";
 import { apiClient } from "../../utils";
 
-// Define an array of metric data
+function formatPercentForDisplay(value) {
+  if (value == null || value === "-") {
+    return "-";
+  }
+  if (typeof value === "number") {
+    return `${value.toFixed(2)}%`;
+  }
+  const text = String(value).trim();
+  if (!text) {
+    return "-";
+  }
+  return text.includes("%") ? text : `${text}%`;
+}
+
 function convertData(data) {
   return [
     { label: "Sent", value: data.numOfEmailSent || "-" },
@@ -32,11 +45,15 @@ function convertData(data) {
     },
     { label: "Unsubscribe Rate", value: "-" },
     {
-      label: "Bounce",
-      value: data.bouncePercentage || "-",
-      number: data.numOfBouncedEmail,
+      label: "Soft Bounce",
+      value: formatPercentForDisplay(data.softBouncePercentage),
+      number: data.numOfSoftBouncedEmail,
     },
-    //  { label: "Marked as Spam", value: "-" },
+    {
+      label: "Hard Bounce",
+      value: formatPercentForDisplay(data.hardBouncePercentage),
+      number: data.numOfHardBouncedEmail,
+    },
     { label: "Revenue", value: "-" },
   ];
 }
@@ -48,8 +65,8 @@ const EMPTY_METRICS = [
   { label: "Click Rate", value: "-" },
   { label: "Click to Open Rate", value: "-" },
   { label: "Unsubscribe Rate", value: "-" },
-  { label: "Bounce", value: "-" },
-  { label: "Marked as Spam", value: "-" },
+  { label: "Soft Bounce", value: "-" },
+  { label: "Hard Bounce", value: "-" },
   { label: "Revenue", value: "-" },
 ];
 
@@ -90,7 +107,7 @@ const PerformanceMetrics = ({ staticEmpty = false, onApiError }) => {
               <h3 className="metric-value">
                 {metric.value}
                 <span className="metric-number">
-                  {metric?.number && ` (${metric.number})`}
+                  {metric?.number != null && ` (${metric.number})`}
                 </span>
               </h3>
               <p className="metric-label">{metric.label}</p>

@@ -22,7 +22,6 @@ if (! class_exists('AdFlipr_Admin')) {
       add_action('admin_notices', array($this, 'admin_settings_feedback_notices'));
       add_action('admin_notices', array($this, 'adflipr_not_connected_notice'));
       add_action('admin_init', array($this, 'maybe_register_privacy_policy_suggested_text'), 5);
-      add_action('wp_enqueue_scripts', array($this, 'add_user_scripts'));
       add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
       add_action('load-toplevel_page_adflipr-settings', array($this, 'send_admin_no_cache_headers'));
       add_shortcode('adflipr_react_app', array($this, 'render_react_app_shortcode'));
@@ -214,6 +213,10 @@ if (! class_exists('AdFlipr_Admin')) {
           'adflipr-for-woocommerce'
         ),
         esc_html__(
+          'Optional storefront popups from your Adflipr account when connected and popup embed is enabled. The script may store a first-party visitor identifier in the browser (localStorage) for frequency rules and analytics. Email fields in popups collect personal data under your privacy policy.',
+          'adflipr-for-woocommerce'
+        ),
+        esc_html__(
           'Data is sent so Adflipr can provide email marketing and automation features you configure in your Adflipr account. See Adflipr’s own privacy policy for how they process data.',
           'adflipr-for-woocommerce'
         )
@@ -276,20 +279,6 @@ if (! class_exists('AdFlipr_Admin')) {
       echo '</div>';
     }
 
-    /**
-     * Public storefront script only when the site administrator opts in.
-     */
-    private function is_utm_tracking_enabled()
-    {
-      if (! defined('ADFLIPR_UTM_TRACKING_OPTION')) {
-        return false;
-      }
-
-      $v = get_option(ADFLIPR_UTM_TRACKING_OPTION, false);
-
-      return $v === true || $v === 1 || $v === '1';
-    }
-
     public function send_data_after_authentication()
     {
       $args = array(
@@ -335,21 +324,6 @@ if (! class_exists('AdFlipr_Admin')) {
       }
 
       AdFlipr_Assets::send_admin_no_cache_headers();
-    }
-
-    public function add_user_scripts()
-    {
-      if (! $this->is_utm_tracking_enabled()) {
-        return;
-      }
-
-      wp_enqueue_script(
-        'adflipr-wp-utm-tracking',
-        ADFLIPR_PLUGIN_URL . '/assets/js/adflipr-utm-tracking.js',
-        array(),
-        ADFLIPR_VERSION,
-        true
-      );
     }
 
     /**

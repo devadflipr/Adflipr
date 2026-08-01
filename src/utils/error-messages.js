@@ -5,6 +5,8 @@
 
 export const ERROR_CODES = {
   INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
+  WRONG_PASSWORD: "WRONG_PASSWORD",
+  EMAIL_NOT_FOUND: "EMAIL_NOT_FOUND",
   SERVER_ERROR: "SERVER_ERROR",
   NETWORK_ERROR: "NETWORK_ERROR",
   WC_SETUP_ERROR: "WC_SETUP_ERROR",
@@ -20,6 +22,10 @@ export const ERROR_CODES = {
 const USER_MESSAGES = {
   [ERROR_CODES.INVALID_CREDENTIALS]:
     "The email or password you entered is incorrect.",
+  [ERROR_CODES.WRONG_PASSWORD]:
+    "The password you entered is incorrect. Please try again.",
+  [ERROR_CODES.EMAIL_NOT_FOUND]:
+    "We could not find an account with that email address.",
   [ERROR_CODES.SERVER_ERROR]:
     "Something went wrong on our end. Please try again in a few minutes.",
   [ERROR_CODES.NETWORK_ERROR]:
@@ -82,6 +88,14 @@ export function classifyErrorDetail(detail, httpStatus = 0) {
 
   const httpMatch = d.match(/\(http\s*(\d{3})\)/i) || d.match(/\b(\d{3})\s*:/);
   const status = http || (httpMatch ? parseInt(httpMatch[1], 10) : 0);
+
+  if (d.includes("password you entered is incorrect")) {
+    return ERROR_CODES.WRONG_PASSWORD;
+  }
+
+  if (d.includes("could not find an account")) {
+    return ERROR_CODES.EMAIL_NOT_FOUND;
+  }
 
   if (
     status === 401 ||
@@ -321,6 +335,8 @@ export function resolveApiError(input) {
 export function pickPrimaryErrorCode(codes) {
   const priority = [
     ERROR_CODES.SESSION_EXPIRED,
+    ERROR_CODES.WRONG_PASSWORD,
+    ERROR_CODES.EMAIL_NOT_FOUND,
     ERROR_CODES.INVALID_CREDENTIALS,
     ERROR_CODES.ACCOUNT_ALREADY_HAS_WOOCOMMERCE_STORE,
     ERROR_CODES.STORE_ALREADY_ON_ANOTHER_ACCOUNT,

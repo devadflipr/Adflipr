@@ -130,6 +130,21 @@ body.toplevel_page_adflipr-settings {
           transition: width 0.3s ease;
         }
       }
+
+      // Matches adflipr-app Home todo dismiss (btn btn-noBGTextWhite in global.scss)
+      .btn.btn-noBGTextWhite {
+        background-color: transparent !important;
+        color: var(--color-white) !important;
+        border: none !important;
+        text-decoration: underline !important;
+        text-transform: none !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        line-height: 20px !important;
+        padding: 7px 16px !important;
+        min-width: auto !important;
+        box-shadow: none !important;
+      }
     }
   }
 
@@ -238,6 +253,13 @@ body.toplevel_page_adflipr-settings {
   // gap: 24px;
   max-width: 100%;
   overflow-x: hidden;
+
+  // Reset browser default heading margins inside the dashboard
+  h3,
+  h4 {
+    margin-top: 0;
+  }
+
   .home-details {
     display: flex;
     flex-direction: column;
@@ -276,6 +298,7 @@ body.toplevel_page_adflipr-settings {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  gap: 16px;
   .automation-card-header {
     display: flex;
     justify-content: space-between;
@@ -287,15 +310,18 @@ body.toplevel_page_adflipr-settings {
       line-height: 24px;
       text-align: left;
       color: var(--color-black-primary);
+      margin: 0;
     }
     .view-all-carts-btn {
       background: none;
       border: none;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       align-items: center;
       gap: 4px;
+      padding: 0;
+      font: inherit;
       span {
         // font-family: inter;
         font-size: 14px;
@@ -306,9 +332,13 @@ body.toplevel_page_adflipr-settings {
       }
       .icon24,
       svg {
+        display: block;
+        flex-shrink: 0;
         width: 20px;
         height: 20px;
         transform: rotate(180deg);
+        position: relative;
+        top: 2px;
       }
     }
   }
@@ -324,6 +354,14 @@ body.toplevel_page_adflipr-settings {
       height: 80px;
       margin-bottom: 8px;
     }
+    .automation-card-empty-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
     .automation-description {
       // font-family: inter;
       font-size: 12px;
@@ -332,9 +370,11 @@ body.toplevel_page_adflipr-settings {
       text-align: center;
       color: var(--color-black-secondary);
       width: 50%;
+      margin: 0;
     }
-    button {
-      margin-top: 16px !important;
+
+    .automation-card-empty-actions button {
+      margin-top: 0 !important;
     }
     .MuiBox-root {
       width: 100%;
@@ -343,14 +383,19 @@ body.toplevel_page_adflipr-settings {
   .automation-activity-log {
     display: flex;
     flex-direction: column;
-    // gap: 24px;
-    // margin-top: 24px;
+    gap: 24px;
     overflow-y: auto;
     overflow-x: clip;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    text-align: left;
+
     .activity {
       display: flex;
       gap: 12px;
-      align-items: center;
+      align-items: flex-start;
+
       .name-initial {
         height: 28px;
         width: 28px;
@@ -358,19 +403,21 @@ body.toplevel_page_adflipr-settings {
         justify-content: center;
         align-items: center;
         flex-shrink: 0;
+        margin-top: 4px;
       }
+
       .activity-description {
         overflow: hidden;
+
         .activity-message {
-          // font-family: inter;
           font-size: 14px;
           font-weight: 400;
           line-height: 20px;
           color: var(--color-black-primary);
           word-wrap: break-word;
         }
+
         .activity-created {
-          // font-family: inter;
           font-size: 14px;
           font-weight: 400;
           line-height: 20px;
@@ -379,11 +426,11 @@ body.toplevel_page_adflipr-settings {
       }
     }
   }
+
   .activity-footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 24px;
   }
 }
 
@@ -394,7 +441,7 @@ body.toplevel_page_adflipr-settings {
   background-color: var(--color-white);
   display: flex;
   flex-direction: column;
-  // gap: 16px;
+  gap: 16px;
   .performance-title {
     // font-family: inter;
     font-size: 20px;
@@ -402,12 +449,13 @@ body.toplevel_page_adflipr-settings {
     line-height: 24px;
     text-align: left;
     color: var(--color-black-primary);
+    margin: 0;
   }
 
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    // gap: 24px 48px;
+    gap: 24px 28px;
     .metric-item {
       text-align: left;
       .metric-value {
@@ -417,7 +465,7 @@ body.toplevel_page_adflipr-settings {
         line-height: 18px;
         text-align: left;
         color: var(--color-black-primary);
-        margin-bottom: 0 !important;
+        margin: 0;
         .metric-number {
           font-size: 14px;
         }
@@ -447,6 +495,7 @@ body.toplevel_page_adflipr-settings {
     line-height: 24px;
     text-align: left;
     color: var(--color-black-primary);
+    margin-top: 0;
     margin-bottom: 36px;
   }
   .central-value {
@@ -511,7 +560,7 @@ body.toplevel_page_adflipr-settings {
     line-height: 24px;
     text-align: left;
     color: var(--color-black-primary);
-    // margin-bottom: 16px;
+    margin: 0 0 16px;
   }
   .links {
     display: flex;
@@ -538,9 +587,13 @@ body.toplevel_page_adflipr-settings {
       }
       .icon24,
       svg {
+        display: block;
+        flex-shrink: 0;
         height: 20px;
         width: 20px;
         transform: rotate(180deg);
+        position: relative;
+        top: 2px;
       }
     }
   }
@@ -647,11 +700,6 @@ body.toplevel_page_adflipr-settings {
     color: var(--color-white) !important;
     border: none !important;
     text-decoration: underline !important;
-    margin-left: 12px;
-    padding: 0 !important;
-    min-width: auto !important;
-    font-size: 13px !important;
-    font-weight: 400 !important;
   }
 }
 
@@ -766,15 +814,15 @@ body.toplevel_page_adflipr-settings {
 }
 
 .name-initial {
-  height: 20px;
-  width: 20px;
+  height: 28px;
+  width: 28px;
   background: var(--color-black-primary);
   border-radius: 4px;
   color: var(--color-white);
   // font-family: inter;
   font-weight: 700;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -962,7 +1010,7 @@ body.toplevel_page_adflipr-settings {
 
 .adflipr-login-dialog__title {
   margin: 0 0 8px;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   line-height: 1.25;
   color: var(--color-black-primary);

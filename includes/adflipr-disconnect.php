@@ -85,6 +85,10 @@ function adflipr_run_soft_disconnect($reason = 'local')
   delete_option('adflipr_token_expiry');
   update_option(ADFLIPR_INTEGRATION_ACTIVE_OPTION, '0', false);
 
+  if (function_exists('adflipr_disable_popup_embed_option')) {
+    adflipr_disable_popup_embed_option();
+  }
+
   if (defined('ADFLIPR_WEBHOOK_RETRY_QUEUE_OPTION')) {
     delete_option(ADFLIPR_WEBHOOK_RETRY_QUEUE_OPTION);
   }

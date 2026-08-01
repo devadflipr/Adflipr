@@ -352,6 +352,10 @@ if (! class_exists('AdFlipr_Auth')) {
     {
       update_option(ADFLIPR_INTEGRATION_ACTIVE_OPTION, '1', false);
 
+      if (function_exists('adflipr_enable_popup_embed_option')) {
+        adflipr_enable_popup_embed_option();
+      }
+
       $secret = isset($connect_payload['consumer_secret']) ? (string) $connect_payload['consumer_secret'] : '';
       if ($secret !== '' && function_exists('adflipr_store_disconnect_signing_key')) {
         update_option(

@@ -15,6 +15,8 @@ if (! function_exists('adflipr_error_codes')) {
   {
     return array(
       'INVALID_CREDENTIALS'                    => 'INVALID_CREDENTIALS',
+      'WRONG_PASSWORD'                           => 'WRONG_PASSWORD',
+      'EMAIL_NOT_FOUND'                          => 'EMAIL_NOT_FOUND',
       'SERVER_ERROR'                             => 'SERVER_ERROR',
       'NETWORK_ERROR'                            => 'NETWORK_ERROR',
       'WC_SETUP_ERROR'                           => 'WC_SETUP_ERROR',
@@ -50,6 +52,8 @@ if (! function_exists('adflipr_user_message_for_code')) {
   {
     $messages = array(
       'INVALID_CREDENTIALS'                 => __('The email or password you entered is incorrect.', 'adflipr-for-woocommerce'),
+      'WRONG_PASSWORD'                      => __('The password you entered is incorrect. Please try again.', 'adflipr-for-woocommerce'),
+      'EMAIL_NOT_FOUND'                     => __('We could not find an account with that email address.', 'adflipr-for-woocommerce'),
       'SERVER_ERROR'                        => __('Something went wrong on our end. Please try again in a few minutes.', 'adflipr-for-woocommerce'),
       'NETWORK_ERROR'                       => __('Could not reach Adflipr. Check your internet connection and try again.', 'adflipr-for-woocommerce'),
       'WC_SETUP_ERROR'                      => __('We could not connect WooCommerce on this site. Ensure WooCommerce is active and try again.', 'adflipr-for-woocommerce'),
@@ -78,6 +82,14 @@ if (! function_exists('adflipr_classify_auth_failure')) {
     $codes   = adflipr_error_codes();
     $detail  = is_string($raw_detail) ? strtolower($raw_detail) : '';
     $http    = (int) $http_code;
+
+    if (strpos($detail, 'password you entered is incorrect') !== false) {
+      return $codes['WRONG_PASSWORD'];
+    }
+
+    if (strpos($detail, 'could not find an account') !== false) {
+      return $codes['EMAIL_NOT_FOUND'];
+    }
 
     if (
       $http === 401
@@ -188,6 +200,69 @@ if (! function_exists('adflipr_auth_failure_response')) {
   }
 }
 
+if (! function_exists('adflipr_extract_api_error_detail')) {
+  /**
+   * Combine ErrorResponse message + details for classification (login failures often put the user text in details).
+   *
+   * @param array<string, mixed> $body Decoded JSON body.
+   */
+  function adflipr_extract_api_error_detail($body)
+  {
+    if (! is_array($body)) {
+      return '';
+    }
+
+    $parts = array();
+    if (isset($body['message']) && is_string($body['message'])) {
+      $trimmed = trim($body['message']);
+      if ($trimmed !== '') {
+        $parts[] = $trimmed;
+      }
+    }
+    if (isset($body['details']) && is_array($body['details'])) {
+      foreach ($body['details'] as $item) {
+        if (is_string($item)) {
+          $trimmed = trim($item);
+          if ($trimmed !== '') {
+            $parts[] = $trimmed;
+          }
+        }
+      }
+    }
+
+    return implode(' ', $parts);
+  }
+}
+
+if (! function_exists('adflipr_map_api_code_to_plugin_code')) {
+  /**
+   * Map Adflipr API ErrorResponse.code (e.g. EG-005) to plugin error_code keys.
+   *
+   * @param string $api_code Value from API {@code code} field.
+   */
+  function adflipr_map_api_code_to_plugin_code($api_code)
+  {
+    if (! is_string($api_code) || $api_code === '') {
+      return '';
+    }
+
+    $api_to_plugin = array(
+      'EG-005' => 'WRONG_PASSWORD',
+      'EG-003' => 'EMAIL_NOT_FOUND',
+    );
+
+    if (isset($api_to_plugin[ $api_code ])) {
+      return $api_to_plugin[ $api_code ];
+    }
+
+    if (adflipr_is_known_api_error_code($api_code)) {
+      return $api_code;
+    }
+
+    return '';
+  }
+}
+
 if (! function_exists('adflipr_auth_failure_from_api_response')) {
   /**
    * Prefer stable API {@code code} from ErrorResponse when login fails.
@@ -198,20 +273,13 @@ if (! function_exists('adflipr_auth_failure_from_api_response')) {
    */
   function adflipr_auth_failure_from_api_response($http_code, $body)
   {
-    $detail = '';
-    if (is_array($body) && isset($body['message'])) {
-      $detail = is_string($body['message'])
-        ? $body['message']
-        : wp_json_encode($body['message']);
-    } elseif (is_array($body) && isset($body['details']) && is_array($body['details']) && ! empty($body['details'])) {
-      $first = $body['details'][0];
-      $detail = is_string($first) ? $first : wp_json_encode($first);
+    $detail = adflipr_extract_api_error_detail($body);
+
+    $forced_code = '';
+    if (is_array($body) && isset($body['code']) && is_string($body['code'])) {
+      $forced_code = adflipr_map_api_code_to_plugin_code($body['code']);
     }
 
-    if (is_array($body) && isset($body['code']) && is_string($body['code']) && adflipr_is_known_api_error_code($body['code'])) {
-      return adflipr_auth_failure_response($http_code, $detail, $body['code']);
-    }
-
-    return adflipr_auth_failure_response($http_code, $detail);
+    return adflipr_auth_failure_response($http_code, $detail, $forced_code);
   }
 }

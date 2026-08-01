@@ -231,7 +231,7 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
               <PerformanceMetrics staticEmpty />
               <RecentCard
                 title="Recent Campaigns"
-                linkText="View all Campaigns"
+                linkText="View All Campaigns"
                 imageText="No campaigns created"
                 description="Once your campaign is published, you can start receiving data."
                 buttonText="Create Campaign"
@@ -244,10 +244,10 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
               />
               <RecentCard
                 title="Recent Carts"
-                linkText="View all Carts"
+                linkText="View All Carts"
                 imageText="No carts created"
-                buttonText="Connect Your Store"
                 description="Whenever a cart is abandoned by a customer, we will immediately track it and display the cart details for you."
+                buttonText="Connect Your Store"
                 iconSrc={ImageNoSearch}
                 containerHeight={402}
                 path="/app-integration"
@@ -257,10 +257,10 @@ const Login = ({ setIsLoggedIn, loginOpen, onLoginOpen, onLoginClose }) => {
               />
               <RecentCard
                 title="Recent Automations"
-                linkText="View all Automations"
+                linkText="View All Automations"
                 imageText="No automations available"
-                buttonText="Create Automation"
                 description="Once your automation is published, you can start receiving data."
+                buttonText="Create Automation"
                 iconSrc={ImageNoSearch}
                 containerHeight={402}
                 automations={[]}

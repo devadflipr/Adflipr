@@ -1,3 +1,6 @@
+/**
+ * @deprecated UTM capture moved to adflipr-cart-tracker.js (loaded on all WooCommerce storefront pages).
+ */
 document.addEventListener("DOMContentLoaded", function () {
   // Helper function to set a session cookie
   function setCookie(name, value) {

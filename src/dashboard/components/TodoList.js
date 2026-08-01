@@ -6,12 +6,17 @@ import {
   TODO_TASKS,
 } from "../../constants/todoTasks";
 import { apiClient, getAppBaseUrl } from "../../utils";
+import {
+  isTodoFlag,
+  isWpTodoDismissed,
+  setWpTodoDismissed,
+} from "../../utils/wp-todo-dismiss";
 
 function updateCompletedByStatus(tasks, status) {
   return tasks.map((task) => {
     const statusKey = TASK_ID_TO_STATUS[task.id];
     if (statusKey && status[statusKey] !== undefined) {
-      return { ...task, completed: Boolean(status[statusKey]) };
+      return { ...task, completed: isTodoFlag(status[statusKey]) };
     }
     return task;
   });
@@ -22,7 +27,8 @@ const TodoList = ({ onApiError }) => {
     TODO_TASKS.map((task) => ({ ...task, completed: false })),
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const [isDismissing, setIsDismissing] = useState(false);
+  const [isHidden, setIsHidden] = useState(() => isWpTodoDismissed());
   const [showDismiss, setShowDismiss] = useState(false);
 
   const fetchTodo = () => {
@@ -32,7 +38,6 @@ const TodoList = ({ onApiError }) => {
         setTasks((prev) => updateCompletedByStatus(prev, data));
 
         const {
-          dismissTodoSection,
           isBusinessDetailsAvailable,
           isContactCreated,
           isDomainConnected,
@@ -40,21 +45,14 @@ const TodoList = ({ onApiError }) => {
         } = data;
 
         const allComplete =
-          isBusinessDetailsAvailable &&
-          isContactCreated &&
-          isDomainConnected &&
-          isStoreConnected;
+          isTodoFlag(isBusinessDetailsAvailable) &&
+          isTodoFlag(isContactCreated) &&
+          isTodoFlag(isDomainConnected) &&
+          isTodoFlag(isStoreConnected);
 
-        setIsHidden(
-          Boolean(
-            dismissTodoSection &&
-              isBusinessDetailsAvailable &&
-              isContactCreated &&
-              isDomainConnected &&
-              isStoreConnected,
-          ),
-        );
-        setShowDismiss(Boolean(allComplete));
+        // Hide only after Dismiss in this WP admin UI (localStorage), not from
+        // account-wide dismissTodoSection on first load (e.g. dismissed in main app).
+        setShowDismiss(allComplete && !isWpTodoDismissed());
       })
       .catch((error) => {
         console.log("Error fetching todo list:", error);
@@ -68,14 +66,20 @@ const TodoList = ({ onApiError }) => {
   }, []);
 
   const dismissTodo = () => {
+    setIsDismissing(true);
     apiClient("proxy/users/preferences", "PUT", null, {
       dismissTodoSection: true,
     })
-      .then(() => fetchTodo())
+      .then(() => {
+        setWpTodoDismissed();
+        setIsHidden(true);
+        setShowDismiss(false);
+      })
       .catch((error) => {
         console.log("Error dismissing todo list:", error);
         onApiError?.(error);
-      });
+      })
+      .finally(() => setIsDismissing(false));
   };
 
   const openTaskInApp = (path) => {
@@ -109,8 +113,9 @@ const TodoList = ({ onApiError }) => {
               type="button"
               onClick={dismissTodo}
               className="btn btn-noBGTextWhite"
+              disabled={isDismissing}
             >
-              Dismiss
+              {isDismissing ? "Dismissing..." : "Dismiss"}
             </button>
           )}
         </div>

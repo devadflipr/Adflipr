@@ -1,6 +1,20 @@
 import React from "react";
 import { getAppBaseUrl } from "../../utils";
 
+const linkStyle = {
+  color: "#565ADD",
+  textDecoration: "none",
+  cursor: "pointer",
+};
+
+const linkButtonStyle = {
+  ...linkStyle,
+  background: "transparent",
+  border: "none",
+  padding: 0,
+  font: "inherit",
+};
+
 const ActivityDescription = ({ activity }) => {
   const redirectToNewTab = (url) => {
     window.open(`${getAppBaseUrl()}/app${url}`, "_blank");
@@ -11,17 +25,15 @@ const ActivityDescription = ({ activity }) => {
   };
 
   const handleContactClick = (id, tab = 0) => {
-    redirectToNewTab(`/contacts/allContacts/${id}?tab=${tab}`);
+    if (id) {
+      redirectToNewTab(`/contacts/allContacts/${id}?tab=${tab}`);
+    }
   };
 
   const handleCampaignClick = (id) => {
-    redirectToNewTab(`/campaigns/charts/${id}`);
-  };
-
-  const linkStyle = {
-    color: "#565ADD",
-    textDecoration: "none",
-    cursor: "pointer",
+    if (id) {
+      redirectToNewTab(`/campaigns/charts/${id}`);
+    }
   };
 
   if (!activity) return null;
@@ -30,16 +42,16 @@ const ActivityDescription = ({ activity }) => {
     case "PROFILE_ADDED":
       return (
         <div>
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleContactClick(activity.metadata?.contact_id);
             }}
           >
             {activity.metadata?.contact_name}
-          </a>{" "}
+          </button>{" "}
           has recently joined
         </div>
       );
@@ -48,16 +60,16 @@ const ActivityDescription = ({ activity }) => {
       return (
         <div>
           Added note on{" "}
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleContactClick(activity.metadata?.contact_id);
             }}
           >
             {activity.metadata?.contact_name}
-          </a>{" "}
+          </button>{" "}
           {activity.metadata?.note_description}
         </div>
       );
@@ -65,81 +77,81 @@ const ActivityDescription = ({ activity }) => {
     case "ORDERED":
       return (
         <div>
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleContactClick(activity.metadata?.contact_id);
             }}
           >
             {activity.metadata?.contact_name}
-          </a>{" "}
+          </button>{" "}
           has made a new purchase, Order Id{" "}
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
-              handleContactClick(activity.metadata.contact_id, 4);
+              handleContactClick(activity.metadata?.contact_id, 4);
             }}
           >
             #{activity.metadata?.order_id}
-          </a>
+          </button>
         </div>
       );
 
     case "ABANDONED":
       return (
         <div>
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleContactClick(activity.metadata?.contact_id);
             }}
           >
             {activity.metadata?.contact_name}
-          </a>{" "}
+          </button>{" "}
           has abandoned the cart{" "}
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleAbandonIdClick();
             }}
           >
             #{activity.metadata?.transaction_id}
-          </a>
+          </button>
         </div>
       );
 
     case "RECOVERED":
       return (
         <div>
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleContactClick(activity.metadata?.contact_id);
             }}
           >
             {activity.metadata?.contact_name}
-          </a>{" "}
+          </button>{" "}
           has recovered an abandoned order{" "}
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleAbandonIdClick(1);
             }}
           >
             #{activity.metadata?.transaction_id}
-          </a>
+          </button>
         </div>
       );
 
@@ -147,16 +159,16 @@ const ActivityDescription = ({ activity }) => {
       return (
         <div>
           Email campaign{" "}
-          <a
-            href="#"
-            style={linkStyle}
+          <button
+            type="button"
+            style={linkButtonStyle}
             onClick={(e) => {
               e.preventDefault();
               handleCampaignClick(activity.metadata?.campaign_id);
             }}
           >
             {activity.metadata?.campaign_name}
-          </a>{" "}
+          </button>{" "}
           is Published
         </div>
       );

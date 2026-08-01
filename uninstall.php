@@ -44,6 +44,8 @@ $adflipr_option_keys = array(
   'adflipr_last_order_event',
   'adflipr_last_retry_run',
   'adflipr_utm_tracking_enabled',
+  'adflipr_popup_embed_enabled',
+  'adflipr_migrations',
   ADFLIPR_INTEGRATION_ACTIVE_OPTION,
   ADFLIPR_DISCONNECT_SIGNING_KEY_OPTION,
 );

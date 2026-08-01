@@ -4,7 +4,7 @@
  * Plugin Name: Adflipr for WooCommerce
  * Plugin URI: https://github.com/devadflipr/adflipr
  * Description: Email marketing and automation for WooCommerce stores, powered by secure catalog, cart, checkout, and order sync with Adflipr.
- * Version: 1.0.22
+ * Version: 1.0.62
  * Requires at least: 6.4
  * Tested up to: 6.9
  * Requires PHP: 8.1
@@ -61,7 +61,9 @@ if (! defined('ADFLIPR_DEBUG')) {
   define('ADFLIPR_DEBUG', false);
 }
 require_once __DIR__ . '/includes/adflipr-debug.php';
+require_once __DIR__ . '/includes/adflipr-install-telemetry.php';
 require_once __DIR__ . '/includes/adflipr-disconnect.php';
+require_once __DIR__ . '/includes/adflipr-upgrade.php';
 require_once __DIR__ . '/includes/adflipr-rest-permissions.php';
 require_once __DIR__ . '/includes/adflipr-webhook-idempotency.php';
 require_once __DIR__ . '/includes/adflipr-queue-helpers.php';
@@ -93,6 +95,10 @@ if (! defined('ADFLIPR_WEBHOOK_RETRY_MANUAL_MAX_LOOPS')) {
 if (! defined('ADFLIPR_UTM_TRACKING_OPTION')) {
   /** Option value 1/0 — public UTM cookie script loads only when enabled (opt-in). */
   define('ADFLIPR_UTM_TRACKING_OPTION', 'adflipr_utm_tracking_enabled');
+}
+if (! defined('ADFLIPR_UTM_SESSION_KEY')) {
+  /** WooCommerce session key for UTM attribution (survives checkout when cookies are not on the order request). */
+  define('ADFLIPR_UTM_SESSION_KEY', 'adflipr_utm_tracking');
 }
 if (! defined('ADFLIPR_SAVE_CART_NONCE_ACTION')) {
   define('ADFLIPR_SAVE_CART_NONCE_ACTION', 'adflipr_save_cart');
@@ -128,6 +134,18 @@ if (! defined('ADFLIPR_LAST_ORDER_EVENT_OPTION')) {
 if (! defined('ADFLIPR_LAST_RETRY_RUN_OPTION')) {
   /** Unix time the outbound retry drain last ran (cron/manual/CLI; autoload no). */
   define('ADFLIPR_LAST_RETRY_RUN_OPTION', 'adflipr_last_retry_run');
+}
+if (! defined('ADFLIPR_RECOVERY_CART_SESSION_KEY')) {
+  /** WC session key: stable cart_hash sent to Adflipr for the abandonment journey. */
+  define('ADFLIPR_RECOVERY_CART_SESSION_KEY', 'adflipr_recovery_cart_hash');
+}
+if (! defined('ADFLIPR_RECOVERY_CART_URL_PARAM')) {
+  /** Query arg on recovery URLs to restore the stable cart_hash into WC session. */
+  define('ADFLIPR_RECOVERY_CART_URL_PARAM', 'adflipr_recovery_cart');
+}
+if (! defined('ADFLIPR_RECOVERY_CART_ORDER_META')) {
+  /** Order meta: stable recovery cart_hash at purchase. */
+  define('ADFLIPR_RECOVERY_CART_ORDER_META', '_adflipr_cart_hash');
 }
 
 if (! class_exists('AdFlipr_Core')) {
@@ -198,7 +216,9 @@ if (! class_exists('AdFlipr_Core')) {
       require __DIR__ . '/includes/class-adflipr-auth.php';
       require __DIR__ . '/includes/class-adflipr-data.php';
       require __DIR__ . '/includes/class-adflipr-admin-page.php';
+      require __DIR__ . '/includes/class-adflipr-recovery-cart-hash.php';
       require __DIR__ . '/includes/class-adflipr-cart-tracker.php';
+      require __DIR__ . '/includes/class-adflipr-popup-embed.php';
     }
 
     /**
@@ -290,6 +310,10 @@ function adflipr_on_activate()
   adflipr_schedule_webhook_retry_cron();
   delete_option('adflipr_disabled_wc_emails');
   delete_option('adflipr_disabled_wc_emails_pending');
+
+  if (function_exists('adflipr_run_install_telemetry_on_activate')) {
+    adflipr_run_install_telemetry_on_activate();
+  }
 }
 
 /**
@@ -297,6 +321,9 @@ function adflipr_on_activate()
  */
 function adflipr_on_deactivate()
 {
+  wp_clear_scheduled_hook('adflipr_install_telemetry_debug_tick');
+  delete_option('adflipr_install_telemetry_debug_snapshot');
+
   if (defined('ADFLIPR_WEBHOOK_RETRY_CRON_HOOK')) {
     wp_clear_scheduled_hook(ADFLIPR_WEBHOOK_RETRY_CRON_HOOK);
   }
