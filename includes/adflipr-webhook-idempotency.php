@@ -103,6 +103,28 @@ if (! function_exists('adflipr_webhook_payload_with_idempotency')) {
         $data['webhookId'] = 'wcwp_' . hash('sha256', $host . '|checkout_purchased|' . $oid);
         break;
 
+      case 'price_drop':
+      case 'price_increase':
+        $pid = isset($data['product_id']) ? (string) $data['product_id'] : '';
+        $old = isset($data['old_price']) ? (string) $data['old_price'] : '';
+        $new = isset($data['new_price']) ? (string) $data['new_price'] : '';
+        $data['webhookId'] = 'wcwp_' . hash(
+          'sha256',
+          $host . '|' . $action . '|' . $pid . '|' . $old . '|' . $new
+        );
+        break;
+
+      case 'sku_change':
+        $pid = isset($data['product_id']) ? (string) $data['product_id'] : '';
+        $old = isset($data['old_sku']) ? (string) $data['old_sku'] : '';
+        $new = isset($data['new_sku']) ? (string) $data['new_sku'] : '';
+        $stock = isset($data['stock_status']) ? (string) $data['stock_status'] : '';
+        $data['webhookId'] = 'wcwp_' . hash(
+          'sha256',
+          $host . '|sku_change|' . $pid . '|' . $old . '|' . $new . '|' . $stock
+        );
+        break;
+
       default:
         // Unknown actions: random id — backend may not dedupe retries of the same logical event.
         $data['webhookId'] = 'wcwp_' . hash('sha256', $host . '|' . $action . '|' . wp_generate_uuid4());

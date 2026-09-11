@@ -146,6 +146,8 @@ if (! class_exists('Adflipr_Popup_Embed')) {
       );
     }
   }
+}
 
+if (class_exists('AdFlipr_Core') && class_exists('Adflipr_Popup_Embed')) {
   AdFlipr_Core::register('popup_embed', 'Adflipr_Popup_Embed');
 }

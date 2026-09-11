@@ -4,7 +4,7 @@
  * Plugin Name: Adflipr for WooCommerce
  * Plugin URI: https://github.com/devadflipr/adflipr
  * Description: Email marketing and automation for WooCommerce stores, powered by secure catalog, cart, checkout, and order sync with Adflipr.
- * Version: 1.0.62
+ * Version: 1.0.74
  * Requires at least: 6.4
  * Tested up to: 6.9
  * Requires PHP: 8.1
@@ -63,7 +63,6 @@ if (! defined('ADFLIPR_DEBUG')) {
 require_once __DIR__ . '/includes/adflipr-debug.php';
 require_once __DIR__ . '/includes/adflipr-install-telemetry.php';
 require_once __DIR__ . '/includes/adflipr-disconnect.php';
-require_once __DIR__ . '/includes/adflipr-upgrade.php';
 require_once __DIR__ . '/includes/adflipr-rest-permissions.php';
 require_once __DIR__ . '/includes/adflipr-webhook-idempotency.php';
 require_once __DIR__ . '/includes/adflipr-queue-helpers.php';
@@ -185,8 +184,23 @@ if (! class_exists('AdFlipr_Core')) {
     /** @var Adflipr_Cart_Tracker|null */
     public $cart_tracker;
 
+    /** @var Adflipr_Product_Price_Tracker|null */
+    public $product_price_tracker;
+
+    /** @var Adflipr_Product_Sku_Tracker|null */
+    public $product_sku_tracker;
+
     /** @var AdFlipr_Health_Service|null */
     public $health;
+
+    /** @var Adflipr_Popup_Embed|null */
+    public $popup_embed;
+
+    /** @var Adflipr_Push_Sw|null */
+    public $push_sw;
+
+    /** @var Adflipr_Push_Embed|null */
+    public $push_embed;
 
     /**
      * AdFlipr_Core constructor.
@@ -218,7 +232,11 @@ if (! class_exists('AdFlipr_Core')) {
       require __DIR__ . '/includes/class-adflipr-admin-page.php';
       require __DIR__ . '/includes/class-adflipr-recovery-cart-hash.php';
       require __DIR__ . '/includes/class-adflipr-cart-tracker.php';
+      require __DIR__ . '/includes/class-adflipr-product-price-tracker.php';
+      require __DIR__ . '/includes/class-adflipr-product-sku-tracker.php';
       require __DIR__ . '/includes/class-adflipr-popup-embed.php';
+      require __DIR__ . '/includes/class-adflipr-push-sw.php';
+      require __DIR__ . '/includes/class-adflipr-push-embed.php';
     }
 
     /**
@@ -274,6 +292,8 @@ if (! function_exists('AdFlipr_Core')) {
 
 $GLOBALS['AdFlipr_Core'] = AdFlipr_Core();
 
+require_once __DIR__ . '/includes/adflipr-upgrade.php';
+
 /**
  * Schedule periodic drain of the outbound WooCommerce webhook retry queue.
  */
@@ -290,7 +310,7 @@ function adflipr_schedule_webhook_retry_cron()
 /**
  * Plugin activation: requirements check, then webhook retry cron.
  */
-function adflipr_on_activate()
+function adflipr_on_activate() 
 {
   if (! adflipr_meets_requirements()) {
     if (! function_exists('deactivate_plugins')) {

@@ -23,6 +23,23 @@
     "utm_content",
   ];
   var COOKIE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+  var WEB_PUSH_ENDPOINT_KEY = "adflipr_web_push_endpoint";
+  var WEB_PUSH_SUBSCRIPTION_ID_KEY = "adflipr_web_push_subscription_id";
+
+  function readWebPushIdentity() {
+    var identity = {};
+    try {
+      var endpoint = sessionStorage.getItem(WEB_PUSH_ENDPOINT_KEY);
+      var subscriptionId = sessionStorage.getItem(WEB_PUSH_SUBSCRIPTION_ID_KEY);
+      if (endpoint) {
+        identity.web_push_endpoint = endpoint;
+      }
+      if (subscriptionId) {
+        identity.web_push_subscription_id = subscriptionId;
+      }
+    } catch (e) {}
+    return identity;
+  }
 
   function setUtmCookie(name, value) {
     document.cookie =
@@ -129,12 +146,20 @@
         return;
       }
       setTimeout(function () {
-        $.post(adflipr_vars.ajax_url, {
+        var payload = {
           action: "adflipr_save_cart",
           nonce: adflipr_vars.nonce,
           security: adflipr_vars.security,
           email: adflipr_email,
-        });
+        };
+        var pushIdentity = readWebPushIdentity();
+        if (pushIdentity.web_push_endpoint) {
+          payload.web_push_endpoint = pushIdentity.web_push_endpoint;
+        }
+        if (pushIdentity.web_push_subscription_id) {
+          payload.web_push_subscription_id = pushIdentity.web_push_subscription_id;
+        }
+        $.post(adflipr_vars.ajax_url, payload);
       }, 3000);
     }
 

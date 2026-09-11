@@ -335,6 +335,19 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
         'type'            => 'recoverable',
       );
 
+      if (isset($_POST['web_push_subscription_id'])) {
+        $push_subscription_id = sanitize_text_field(wp_unslash((string) $_POST['web_push_subscription_id']));
+        if ($push_subscription_id !== '') {
+          $cart_abandonment['web_push_subscription_id'] = $push_subscription_id;
+        }
+      }
+      if (isset($_POST['web_push_endpoint'])) {
+        $push_endpoint = esc_url_raw(wp_unslash((string) $_POST['web_push_endpoint']));
+        if ($push_endpoint !== '') {
+          $cart_abandonment['web_push_endpoint'] = $push_endpoint;
+        }
+      }
+
       $result = AdFlipr_Core()->data->send_data_on_webhook($cart_abandonment);
       wp_send_json_success($result);
     }
