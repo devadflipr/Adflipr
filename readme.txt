@@ -7,7 +7,7 @@ Requires PHP: 8.1
 Requires Plugins: woocommerce
 WC requires at least: 8.0
 WC tested up to: 10.3
-Stable tag: 1.0.74
+Stable tag: 1.0.76
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -158,6 +158,12 @@ Run `npm install` and `npm run build` in the plugin directory. See **Development
 
 == Changelog ==
 
+= 1.0.75 =
+* Send storefront visitor id (`adf_woo_vid`) on `checkout_purchased` and persist it on the order so Adflipr can attribute GA4 purchase to the same client as browse events.
+
+= 1.0.74 =
+* Server-side storefront events (page view, product view, add to cart) and purchase fan-out to Adflipr. No Meta/Google tags in the storefront; the integration token stays on the server.
+
 = 1.0.58 =
 * Upgrade migration: automatically enable storefront popup embed for stores that connected before popups shipped.
 
@@ -224,6 +230,7 @@ Adflipr is licensed under the GPLv3 or later.
 == Privacy Policy ==
 
 * **Sync & webhooks:** Product, coupon, order, subscription (if applicable), and related payloads may be sent to Adflipr over HTTPS after you connect.
+* **Storefront analytics (after connect):** Page views, product views, add-to-cart, and purchases may be sent to Adflipr (then Meta/Google if you configured Analytics Tracking). A first-party visitor cookie (`adf_woo_vid`) may be set. Meta `_fbp`/`_fbc` cookies are forwarded when present. The Adflipr token is not placed in storefront JavaScript.
 * **Authentication:** Login tokens are stored in `wp_options` after admin sign-in.
 * **UTM cookies (optional):** When `adflipr_utm_tracking_enabled` is on, `utm_*` query keys may be stored in first-party session cookies for attribution.
 * **Disconnect & uninstall:** Disconnect clears local tokens; uninstall removes plugin options and attempts to notify Adflipr.

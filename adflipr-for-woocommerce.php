@@ -4,7 +4,7 @@
  * Plugin Name: Adflipr for WooCommerce
  * Plugin URI: https://github.com/devadflipr/adflipr
  * Description: Email marketing and automation for WooCommerce stores, powered by secure catalog, cart, checkout, and order sync with Adflipr.
- * Version: 1.0.74
+ * Version: 1.0.76
  * Requires at least: 6.4
  * Tested up to: 6.9
  * Requires PHP: 8.1
@@ -86,6 +86,16 @@ if (! defined('ADFLIPR_WEBHOOK_RETRY_BATCH_PER_RUN')) {
 }
 if (! defined('ADFLIPR_WEBHOOK_HTTP_TIMEOUT')) {
   define('ADFLIPR_WEBHOOK_HTTP_TIMEOUT', 15);
+}
+if (! defined('ADFLIPR_STOREFRONT_TRACKING_HTTP_TIMEOUT')) {
+  define('ADFLIPR_STOREFRONT_TRACKING_HTTP_TIMEOUT', 3);
+}
+if (! defined('ADFLIPR_WOO_VID_COOKIE')) {
+  define('ADFLIPR_WOO_VID_COOKIE', 'adf_woo_vid');
+}
+if (! defined('ADFLIPR_WOO_VID_ORDER_META')) {
+  /** HPOS-safe order meta: storefront visitor id for GA4 purchase client_id continuity. */
+  define('ADFLIPR_WOO_VID_ORDER_META', '_adf_woo_vid');
 }
 if (! defined('ADFLIPR_WEBHOOK_RETRY_MANUAL_MAX_LOOPS')) {
   /** Max cron-equivalent batches per manual / WP-CLI drain (each batch ≤ ADFLIPR_WEBHOOK_RETRY_BATCH_PER_RUN items). */
@@ -232,6 +242,7 @@ if (! class_exists('AdFlipr_Core')) {
       require __DIR__ . '/includes/class-adflipr-admin-page.php';
       require __DIR__ . '/includes/class-adflipr-recovery-cart-hash.php';
       require __DIR__ . '/includes/class-adflipr-cart-tracker.php';
+      require __DIR__ . '/includes/class-adflipr-storefront-tracking.php';
       require __DIR__ . '/includes/class-adflipr-product-price-tracker.php';
       require __DIR__ . '/includes/class-adflipr-product-sku-tracker.php';
       require __DIR__ . '/includes/class-adflipr-popup-embed.php';

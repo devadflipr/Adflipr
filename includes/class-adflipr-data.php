@@ -712,6 +712,62 @@ if (! class_exists('AdFlipr_Data')) {
     }
 
     /**
+     * POST one storefront tracking event (SS-5). No retry queue (high volume). Never logs the body.
+     *
+     * @param array<string, mixed> $payload Typed Adflipr tracking-events body.
+     * @return bool True when Adflipr returned 2xx.
+     */
+    public function send_storefront_tracking_event(array $payload)
+    {
+      if (! AdFlipr_Core()->auth->valid_token()) {
+        return false;
+      }
+      if (! defined('ADFLIPR_WOOCOMMERCE_TRACKING_EVENTS_URL')) {
+        return false;
+      }
+
+      $token = AdFlipr_Core()->auth->get_token();
+      $timeout = defined('ADFLIPR_STOREFRONT_TRACKING_HTTP_TIMEOUT')
+        ? (int) ADFLIPR_STOREFRONT_TRACKING_HTTP_TIMEOUT
+        : 3;
+
+      $response = wp_remote_post(
+        ADFLIPR_WOOCOMMERCE_TRACKING_EVENTS_URL,
+        [
+          'body'    => wp_json_encode($payload),
+          'headers' => [
+            'Content-Type'  => 'application/json',
+            'Authorization' => $token,
+          ],
+          'timeout' => $timeout,
+        ]
+      );
+
+      if (is_wp_error($response)) {
+        adflipr_debug_log(
+          'storefront_tracking_wp_error',
+          array('error' => $response->get_error_message())
+        );
+        return false;
+      }
+
+      $code = (int) wp_remote_retrieve_response_code($response);
+      if ($code >= 200 && $code < 300) {
+        return true;
+      }
+
+      $body = (string) wp_remote_retrieve_body($response);
+      if (function_exists('adflipr_response_is_integration_deleted')
+        && adflipr_response_is_integration_deleted($code, $body)
+      ) {
+        AdFlipr_Core()->auth->soft_disconnect('remote');
+      }
+
+      adflipr_debug_log('storefront_tracking_non_2xx', array('code' => $code));
+      return false;
+    }
+
+    /**
      * Send WooCommerce webhook payload; on failure enqueue for WP-Cron retry unless skipped.
      *
      * @param array<string, mixed> $data

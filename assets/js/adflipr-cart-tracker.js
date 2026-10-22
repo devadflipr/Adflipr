@@ -22,6 +22,8 @@
     "utm_term",
     "utm_content",
   ];
+  var CLICK_ID_KEYS = ["gclid", "gbraid", "wbraid"];
+  var ATTRIBUTION_KEYS = UTM_KEYS.concat(CLICK_ID_KEYS);
   var COOKIE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
   var WEB_PUSH_ENDPOINT_KEY = "adflipr_web_push_endpoint";
   var WEB_PUSH_SUBSCRIPTION_ID_KEY = "adflipr_web_push_subscription_id";
@@ -64,7 +66,7 @@
         return;
       }
       var key = segment.slice(0, eq).trim();
-      if (UTM_KEYS.indexOf(key) === -1) {
+      if (ATTRIBUTION_KEYS.indexOf(key) === -1) {
         return;
       }
       cookies[key] = decodeURIComponent(segment.slice(eq + 1));
@@ -78,7 +80,7 @@
     var captured = {};
     var hasAny = false;
 
-    UTM_KEYS.forEach(function (key) {
+    ATTRIBUTION_KEYS.forEach(function (key) {
       var value = params.get(key);
       if (value && String(value).trim() !== "") {
         captured[key] = String(value).trim();
@@ -104,6 +106,9 @@
     }
     if (captured.utm_content) {
       console.log("content=" + captured.utm_content);
+    }
+    if (captured.gclid || captured.gbraid || captured.wbraid) {
+      console.log("google click id=present");
     }
 
     return captured;

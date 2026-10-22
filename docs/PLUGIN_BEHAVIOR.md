@@ -82,8 +82,14 @@ Derived constants include **`ADFLIPR_WOOCOMMERCE_WEBHOOK_URL`**, **`ADFLIPR_API_
 
 - On checkout pages, enqueues **`assets/js/adflipr-cart-tracker.js`** and passes **`adflipr_vars.ajax_url`**, **`nonce`** (`wp_create_nonce` action **`ADFLIPR_SAVE_CART_NONCE_ACTION`**, default **`adflipr_save_cart`**).
 - **`wp_ajax_adflipr_save_cart`** / **`wp_ajax_nopriv_adflipr_save_cart`**: verifies AJAX nonce via **`nonce`** or WooCommerce-style **`security`** (same value), applies a **per-IP rate limit** and optional **`Content-Length`** cap (`ADFLIPR_SAVE_CART_MAX_CONTENT_LENGTH`), **`sanitize_email`** / **`esc_url_raw`**, accepts email (and optional URL), builds **`cart_abandonment`** payload, sends via **`send_data_on_webhook`**.
-- **`woocommerce_checkout_create_order`**: stores **`_adflipr_cart_hash`** on the order.
-- **`woocommerce_checkout_order_created`** (classic) and **`woocommerce_store_api_checkout_order_processed`** (block / Store API checkout, WC 7.2+): **`handle_order_completion`** sends **`checkout_purchased`** with order data, UTM cookies (`utm_*`), client IP. Dedup uses order meta **`ADFLIPR_ORDER_CHECKOUT_WEBHOOK_SENT_META`** (`_adflipr_checkout_webhook_sent` = `yes`) after **HTTP 200** or **`queued`**, and **not** when **`queue_full`** (payload could not be persisted). **`_adflipr_cart_hash`** is cleared only after a successful mark.
+- **`woocommerce_checkout_create_order`**: stores **`_adflipr_cart_hash`** on the order; also stores **`_adf_woo_vid`** from the httponly **`adf_woo_vid`** cookie when present (GA4 purchase `client_id` continuity).
+- **`woocommerce_checkout_order_created`** (classic) and **`woocommerce_store_api_checkout_order_processed`** (block / Store API checkout, WC 7.2+): **`handle_order_completion`** sends **`checkout_purchased`** with order data, UTM cookies (`utm_*`), client IP, and **`adf_woo_vid`** (top-level + `tracking.adf_woo_vid` / `tracking.clientId`) resolved from cookie or order meta. Dedup uses order meta **`ADFLIPR_ORDER_CHECKOUT_WEBHOOK_SENT_META`** (`_adflipr_checkout_webhook_sent` = `yes`) after **HTTP 200** or **`queued`**, and **not** when **`queue_full`** (payload could not be persisted). **`_adflipr_cart_hash`** is cleared only after a successful mark.
+
+### Storefront tracking (`Adflipr_Storefront_Tracking` — `class-adflipr-storefront-tracking.php`)
+
+- After the store is **connected**, PHP posts browse events to **`/api/v1/woocommerce/tracking-events`** with the WP integration token (not the Shopify pixel token, not storefront JS).
+- **`template_redirect`:** `PAGE_VIEW`; product pages also `VIEW_CONTENT`. **`woocommerce_add_to_cart`:** `ADD_TO_CART`. Flush on **`shutdown`**. No retry queue. No `gtag`/`fbq`.
+- Forwards `_fbp` / `_fbc` and click-id cookies when present. Sets httponly first-party **`adf_woo_vid`**. Purchase CAPI/GA4 is backend-side from **`checkout_purchased`** (must send the same visitor id — see cart tracker above).
 
 ### Transactional email (`AdFlipr_Transactional_Email` — `class-adflipr-transactional-email.php`)
 

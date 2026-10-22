@@ -18,7 +18,7 @@
 defined('ABSPATH') || exit;
 
 if (! defined('ADFLIPR_API_BASE_URL')) {
-  define('ADFLIPR_API_BASE_URL', apply_filters('adflipr_api_base_url', 'https://adflipr.com'));
+  define('ADFLIPR_API_BASE_URL', apply_filters('adflipr_api_base_url', 'https://dev.danishqureshi.online'));
 }
 
 if (! function_exists('adflipr_api_url')) {
@@ -44,6 +44,10 @@ if (! defined('ADFLIPR_APP_BASE_URL')) {
 
 if (! defined('ADFLIPR_WOOCOMMERCE_WEBHOOK_URL')) {
   define('ADFLIPR_WOOCOMMERCE_WEBHOOK_URL', adflipr_api_url('api/v1/woocommerce/webhook'));
+}
+
+if (! defined('ADFLIPR_WOOCOMMERCE_TRACKING_EVENTS_URL')) {
+  define('ADFLIPR_WOOCOMMERCE_TRACKING_EVENTS_URL', adflipr_api_url('api/v1/woocommerce/tracking-events'));
 }
 
 if (! defined('ADFLIPR_API_DISCONNECT_URL')) {

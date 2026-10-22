@@ -63,6 +63,23 @@ if (! class_exists('Adflipr_Push_Sw')) {
       return 'var ADFLIPR_PUSH_API = ' . wp_json_encode($api_base) . ";\n"
         . 'var ADFLIPR_PUSH_SITE = ' . wp_json_encode($site_id) . ";\n"
         . <<<'JS'
+function adfliprPushDisplayUrl(url) {
+  if (!url || url.charAt(0) === '/') {
+    return '';
+  }
+  var absolute = /^https?:\/\//i.test(url) ? url : 'https://' + url;
+  try {
+    var parsed = new URL(absolute);
+    var host = parsed.hostname.replace(/^www\./i, '');
+    if (!host) {
+      return '';
+    }
+    var path = parsed.pathname && parsed.pathname !== '/' ? parsed.pathname.replace(/\/+$/, '') : '';
+    return host + path;
+  } catch (e) {
+    return '';
+  }
+}
 function adfliprPushReport(kind, data) {
   if (!ADFLIPR_PUSH_API || !ADFLIPR_PUSH_SITE || !data || !data.subscriptionId) {
     return Promise.resolve();
@@ -84,9 +101,14 @@ self.addEventListener('push', function (event) {
     data = event.data ? event.data.json() : {};
   } catch (e) {}
   var title = data.title || 'Notification';
+  var body = data.body || '';
+  var destination = adfliprPushDisplayUrl(data.clickUrl || '');
+  if (destination) {
+    body = body ? body + '\n' + destination : destination;
+  }
   event.waitUntil(Promise.all([
     self.registration.showNotification(title, {
-      body: data.body || '',
+      body: body,
       icon: data.icon,
       image: data.image,
       tag: data.tag,

@@ -31,7 +31,7 @@
 
 | Field | Validation on save | Used for structure/DnD? |
 |-------|-------------------|-------------------------|
-| `name` | Unique per account (if provided) | No |
+| `name` | Unique per account **and type** (if provided). Landing page vs popup vs embed may share a name. | No |
 | `type` | **Required** (`@NotNull` on `UpdatePopupRequest`) | Campaign type only |
 | `status` | Optional (DRAFT / PUBLISHED) | No tree validation on publish |
 | `htmlContent` | Stored as-is | Serialized HTML output, not live tree |
@@ -49,7 +49,7 @@
 | `formPosition` | Banner/flyout edge placement | **No** on save; read for embed response |
 | `submissionTagId` | Server-managed; preserved on merge | N/A |
 
-**Create popup** (`createPopup`): requires `name` + `type`; duplicate name rejected.
+**Create popup** (`createPopup`): requires `name` + `type`; duplicate name rejected **within the same `PopupType`**.
 
 **Conclusion:** **Zero** backend rules enforce draggable structure, column counts, or `canDrop` semantics.
 

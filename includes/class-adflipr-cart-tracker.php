@@ -25,6 +25,12 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
         10,
         2
       );
+      add_action(
+        'woocommerce_checkout_create_order',
+        array($this, 'persist_woo_visitor_id_on_order'),
+        11,
+        2
+      );
 
       add_action('woocommerce_checkout_order_created', [$this, 'handle_order_completion']);
       // Block / Store API checkout: fire when order is processed (not merely updated from request).
@@ -76,6 +82,27 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
     }
 
     /**
+     * Persist storefront visitor id on order (classic checkout create).
+     * Same httponly cookie used for browse tracking-events clientId.
+     *
+     * @param WC_Order $order
+     * @param array    $data
+     */
+    public function persist_woo_visitor_id_on_order($order, $data)
+    {
+      if (! $order instanceof WC_Order) {
+        return;
+      }
+
+      $vid = $this->read_woo_visitor_id_from_cookie();
+      if ($vid === null) {
+        return;
+      }
+
+      $this->write_woo_visitor_id_meta($order, $vid);
+    }
+
+    /**
      * Clear journey key after successful purchase.
      *
      * @param int $order_id
@@ -109,6 +136,7 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
      * 2. Confirm utm_* cookies in DevTools before add-to-cart.
      * 3. Add to cart → checkout → place order.
      * 4. checkout_purchased webhook must include tracking; backend txnSource = ADFLIPR_UTM.
+     * 5. checkout_purchased must include adf_woo_vid (same cookie as browse clientId) for GA4 purchase.
      */
     public function track_cart_abandonment_script()
     {
@@ -391,6 +419,16 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
       $order_data = AdFlipr_Core()->data->get_order_all_possible_data($order);
 
       $tracking = $this->fetch_utm_from_cookies();
+      $woo_vid  = $this->resolve_woo_visitor_id($order);
+      if ($woo_vid !== null) {
+        // Persist before webhook so retries / late sends keep the same client_id.
+        if ($this->write_woo_visitor_id_meta($order, $woo_vid)) {
+          $order->save();
+        }
+        $tracking['adf_woo_vid'] = $woo_vid;
+        $tracking['clientId']    = $woo_vid;
+      }
+
       adflipr_debug_log(
         'Attribution loaded at checkout',
         array(
@@ -398,6 +436,8 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
           'utm_medium'   => isset($tracking['utm_medium']) ? $tracking['utm_medium'] : '',
           'utm_campaign' => isset($tracking['utm_campaign']) ? $tracking['utm_campaign'] : '',
           'has_tracking' => count($tracking) > 0,
+          'has_click_id' => ! empty($tracking['gclid']) || ! empty($tracking['gbraid']) || ! empty($tracking['wbraid']),
+          'has_woo_vid'  => $woo_vid !== null,
         )
       );
 
@@ -410,6 +450,9 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
         'tracking'   => $tracking,
         'ip_address' => $this->get_client_ip(),
       );
+      if ($woo_vid !== null) {
+        $data['adf_woo_vid'] = $woo_vid;
+      }
 
       $result = AdFlipr_Core()->data->send_data_on_webhook($data);
 
@@ -423,6 +466,85 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
         $order->update_meta_data($sent_meta, 'yes');
         $order->save();
       }
+    }
+
+    /**
+     * Cookie name for Woo storefront visitor id (browse + purchase continuity).
+     *
+     * @return string
+     */
+    private function woo_vid_cookie_name()
+    {
+      return defined('ADFLIPR_WOO_VID_COOKIE') ? ADFLIPR_WOO_VID_COOKIE : 'adf_woo_vid';
+    }
+
+    /**
+     * Order meta key for persisted visitor id (matches service resolveClientId).
+     *
+     * @return string
+     */
+    private function woo_vid_order_meta_key()
+    {
+      return defined('ADFLIPR_WOO_VID_ORDER_META') ? ADFLIPR_WOO_VID_ORDER_META : '_adf_woo_vid';
+    }
+
+    /**
+     * @return string|null
+     */
+    private function read_woo_visitor_id_from_cookie()
+    {
+      $cookie = $this->woo_vid_cookie_name();
+      if (! isset($_COOKIE[ $cookie ]) || ! is_scalar($_COOKIE[ $cookie ])) {
+        return null;
+      }
+      $value = sanitize_text_field(wp_unslash((string) $_COOKIE[ $cookie ]));
+      if ($value === '' || strlen($value) > 128) {
+        return null;
+      }
+
+      return $value;
+    }
+
+    /**
+     * Cookie first, then order meta (Store API / retries when cookie absent).
+     *
+     * @param WC_Order $order
+     * @return string|null
+     */
+    private function resolve_woo_visitor_id($order)
+    {
+      $from_cookie = $this->read_woo_visitor_id_from_cookie();
+      if ($from_cookie !== null) {
+        return $from_cookie;
+      }
+
+      $meta = $order->get_meta($this->woo_vid_order_meta_key(), true);
+      if (! is_string($meta)) {
+        return null;
+      }
+      $meta = trim($meta);
+      if ($meta === '' || strlen($meta) > 128) {
+        return null;
+      }
+
+      return $meta;
+    }
+
+    /**
+     * @param WC_Order $order
+     * @param string   $vid
+     * @return bool True when meta was written (caller may need save).
+     */
+    private function write_woo_visitor_id_meta($order, $vid)
+    {
+      $key      = $this->woo_vid_order_meta_key();
+      $existing = $order->get_meta($key, true);
+      if (is_string($existing) && $existing === $vid) {
+        return false;
+      }
+      $order->update_meta_data($key, $vid);
+
+      return true;
     }
 
     /**
@@ -489,7 +611,7 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
       $filtered = array();
       foreach ($stored as $raw_key => $raw_value) {
         $key = sanitize_key((string) $raw_key);
-        if (strpos($key, 'utm_') !== 0 || ! is_scalar($raw_value)) {
+        if (! $this->is_attribution_cookie_key($key) || ! is_scalar($raw_value)) {
           continue;
         }
         $value = sanitize_text_field((string) $raw_value);
@@ -503,6 +625,15 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
     }
 
     /**
+     * @param string $key
+     * @return bool
+     */
+    private function is_attribution_cookie_key($key)
+    {
+      return strpos($key, 'utm_') === 0 || in_array($key, array('gclid', 'gbraid', 'wbraid'), true);
+    }
+
+    /**
      * @return array<string, string>
      */
     private function read_utm_prefixed_cookies()
@@ -511,7 +642,7 @@ if (! class_exists('Adflipr_Cart_Tracker')) {
 
       foreach ($_COOKIE as $raw_key => $raw_value) {
         $key = sanitize_key((string) $raw_key);
-        if (strpos($key, 'utm_') !== 0) {
+        if (! $this->is_attribution_cookie_key($key)) {
           continue;
         }
         if (! is_scalar($raw_value)) {

@@ -58,8 +58,10 @@ Type: `CreatePopupResponse` (built via `CreatePopupResponse.fromEntity(saved)` i
 
 ### Business rules (current)
 - **Account scoping is mandatory**: if `accountId` is blank → error.
-- **Name must be unique (case-insensitive) per account** among non-deleted popups:
-  - `PopupRepositoryWrapper.findByAccountIdAndName(accountId, name)` uses `regex` with `"i"` and `^...$` for exact match.
+- **Name must be unique (case-insensitive) per account and `PopupType`** among non-deleted rows:
+  - `PopupRepositoryWrapper.findByAccountIdAndNameAndType(accountId, name, type)` uses `regex` with `"i"` and `^...$` for exact match.
+  - Landing pages, popups, embeds, and other form types may reuse the same display name. Email templates (emnew / classic) are a separate collection and were never in this pool.
+  - Duplicate copy names (`"{name} (Copy)"`) are also scoped to the source type.
 - New popups are created with:
   - `status = DRAFT`
   - `deleted = false`
